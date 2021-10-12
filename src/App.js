@@ -5,14 +5,16 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import AboutPage from './pages/AboutPage/AboutPage';
 import ContactPage from './pages/ContactPage/ContactPage';
 import MainNavbar from './components/MainNavbar/MainNavbar';
+import { useState } from 'react';
 
 function App() {
+  const [activeUser, setActiveUser] = useState({id:"1", name:"Adi Mor", email:"adi@adi.com", role:"admin"});
   return (
     <div className="app">
       <HashRouter>
         <Switch>
           <Route exact path="/" >
-            <MainNavbar />
+            <MainNavbar activeUser={activeUser}/>
             <HomePage />
           </Route>
           <Route exact path="/about"><AboutPage /></Route>

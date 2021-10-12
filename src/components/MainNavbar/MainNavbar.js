@@ -1,7 +1,7 @@
 import React from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
 
-function MainNavbar(props) {
+function MainNavbar({activeUser}) {
     return (
         <Navbar bg="light" expand="lg">
             <Navbar.Brand href="#/">Milahan</Navbar.Brand>
@@ -12,8 +12,8 @@ function MainNavbar(props) {
                     <Nav.Link href="#/Contact">Contact us</Nav.Link>
                 </Nav>
                 <Nav className="ml-auto">
-                    <Nav.Link href="#/login">Login</Nav.Link>
-                    <Nav.Link href="#">Logout</Nav.Link>
+                    {!activeUser ? <Nav.Link href="#/login">Login</Nav.Link> : null}
+                    {activeUser ? <Nav.Link href="#">Logout</Nav.Link> : null}
                 </Nav>
         </Navbar.Collapse>
         </Navbar>
