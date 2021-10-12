@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import './ContactPage.css'
 
 function ContactPage(props) {
     return (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
+import './MainNavbar.css'
 
 function MainNavbar({activeUser, onLogout}) {
     return (
