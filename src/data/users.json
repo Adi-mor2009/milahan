@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "name": "Adi Mor",
+        "email": "adi@adi.com",
+        "pwd":  "123",
+        "role": "0"
+    },
+    {
+        "id": 2,
+        "name": "Noam Mor",
+        "email": "noam@noam.com",
+        "pwd":  "123",
+        "role": "1"
+    }
+] 

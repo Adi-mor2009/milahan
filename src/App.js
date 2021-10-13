@@ -6,9 +6,12 @@ import AboutPage from './pages/AboutPage/AboutPage';
 import ContactPage from './pages/ContactPage/ContactPage';
 import MainNavbar from './components/MainNavbar/MainNavbar';
 import { useState } from 'react';
+import usersJSON from './data/users.json'
+import UserModel from './model/UserModel';
 
 function App() {
-  const [activeUser, setActiveUser] = useState({id:"1", name:"Adi Mor", email:"adi@adi.com", role:"admin"});
+  const [users, setUsers] = useState(usersJSON.map(plainUser => new UserModel(plainUser)));
+  const [activeUser, setActiveUser] = useState(users[0]);
   return (
     <div className="app">
       <HashRouter>
@@ -19,7 +22,7 @@ function App() {
           </Route>
           <Route exact path="/about"><AboutPage /></Route>
           <Route exact path="/contact"><ContactPage /></Route>
-          <Route exact path="/login"><LoginPage /></Route>
+          <Route exact path="/login"><LoginPage  activeUser={activeUser} users={users} onLogin={user => setActiveUser(user)}/></Route>
         </Switch>
       </HashRouter>
     </div>
