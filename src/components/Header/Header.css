@@ -1,0 +1,24 @@
+@font-face {
+    font-family: "my_font";
+    src: url(./amatic_sc/AmaticSC-Bold.ttf);
+}
+.c-header {
+    width: 100%;
+    padding: 30px;
+    color: white;
+    text-align: center;
+    /* font-family: 'Oswald', sans-serif; */
+    font-family: "my_font";
+    font-size: larger;
+    /* background-image: linear-gradient(rgb(23, 24, 24), rgb(194, 194, 196)); */
+    /* background-image: linear-gradient(rgb(157, 55, 44), rgb(220, 209, 185)); */
+    background-image: url('../../asserts/pas.jpg');;
+}
+/* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; */
+
+.c-header > h1 {
+    font-size: 5rem;
+    font-family: "my_font";
+}

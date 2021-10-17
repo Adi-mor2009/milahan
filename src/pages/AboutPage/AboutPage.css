@@ -1,0 +1,17 @@
+.about-title {
+   color: rgb(154, 54, 47);
+   margin-top: 50px;
+}
+
+.about-text {
+    margin-top: 20px;
+    font-weight: 500;
+}
+
+.about-img {
+    background-image: url('../../asserts/about.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+}
