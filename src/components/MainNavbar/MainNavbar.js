@@ -12,12 +12,13 @@ function MainNavbar({ activeUser, onLogout }) {
                 <Nav className="ms-auto">
                     <Nav.Link href="#/about">אודות</Nav.Link>
                     {activeUser &&  activeUser.role==0 ? <Nav.Link href="#/edit">עריכה</Nav.Link> : null}
-                    <Nav.Link href="#/contact">צור קשר</Nav.Link>
+                    <Nav.Link href="#/contact">יצירת קשר</Nav.Link>
+                    <Nav.Link className="lib-haifa-link" href="https://lib.haifa.ac.il/" target="_blank"></Nav.Link>
                 </Nav>
                 <Nav className="me-auto">
-                    {!activeUser ? <Nav.Link href="#/login"><span style={{ color: "blue", fontWeight: "bold" }}>התחבר</span></Nav.Link> : null}
+                    {!activeUser ? <Nav.Link href="#/login"><span style={{ color: "blue", fontWeight: "bold" }}>התחברות</span></Nav.Link> : null}
                     {activeUser ? <Navbar.Text><span style={{ color: "blue" }}>שלום {activeUser.name}</span></Navbar.Text> : null}
-                    {activeUser ? <Nav.Link href="#" onClick={() => onLogout()}>התנתק</Nav.Link> : null}
+                    {activeUser ? <Nav.Link href="#" onClick={() => onLogout()}>התנתקות</Nav.Link> : null}
                     {/* {activeUser ? <Nav.Link href="#/dashboard"></Nav.Link> : null}
                     {activeUser &&  activeUser.role===0 ? <Nav.Link href="#tenants/"></Nav.Link> : null}
                     {activeUser ? <Nav.Link href="#/messages"></Nav.Link> : null}

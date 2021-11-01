@@ -5,20 +5,45 @@
 .c-header {
     width: 100%;
     padding: 30px;
-    color: white;
-    text-align: center;
+    color: rgb(88, 89, 91);
+    /* color: white;
+    text-align: center; */
     /* font-family: 'Oswald', sans-serif; */
     font-family: "my_font";
     font-size: larger;
     /* background-image: linear-gradient(rgb(23, 24, 24), rgb(194, 194, 196)); */
     /* background-image: linear-gradient(rgb(157, 55, 44), rgb(220, 209, 185)); */
-    background-image: url('../../asserts/pas.jpg');;
+    background-image: url('../../asserts/background.jpg');
+    display: flex;
 }
 /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif; */
 
 .c-header > h1 {
+    /* padding: 5px; */
+    padding-left: 5px;
     font-size: 5rem;
+    color: rgb(88, 89, 91);
     font-family: "my_font";
+}
+
+.c-header > .lib-logo-img {
+    display: inline;
+    background-image: url('../../asserts/lib-logo.jpg');
+    position: relative;
+    /* top: 20px; */
+    /* background-position: center; */
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 6%;
+    /* height: 10%; */
+    /* min-height: 100vh; */
+}
+
+.c-header > .lib-haifa-text {
+    /* margin-right: auto; */
+    color: white;
+    font-size: 36px;
+    position: relative;
 }

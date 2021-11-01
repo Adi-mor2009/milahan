@@ -6,10 +6,15 @@
 
 .c-searchbox {
     position: relative;
+    padding: 50px;
 }
 
 .c-searchbox > .result-box {
     position: absolute;
     width: 100%;
     z-index: 10;
+}
+
+input.form-control {
+    font-weight: bold;
 }

@@ -1,0 +1,28 @@
+@font-face {
+    font-family: "my_font";
+    src: url(./amatic_sc/AmaticSC-Bold.ttf);
+}
+.c-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 30px;
+    color: rgb(88, 89, 91);
+    /* color: white;
+    text-align: center; */
+    /* font-family: 'Oswald', sans-serif; */
+    font-family: "my_font";
+    font-size: larger;
+    text-align: center;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: bold;
+    background-image: linear-gradient(rgb(240, 239, 233), white);
+    /* background-image: linear-gradient(rgb(157, 55, 44), rgb(220, 209, 185)); */
+    /* background-image: url('../../asserts/background.jpg'); */
+    display: flex;
+    border-top: solid 2px rgb(88, 89, 91);
+}
+

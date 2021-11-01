@@ -10,6 +10,7 @@ import { useState } from 'react';
 import usersJSON from './data/users.json'
 import UserModel from './model/UserModel';
 import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 
 function App() {
   const [users, setUsers] = useState(usersJSON.map(plainUser => new UserModel(plainUser)));
@@ -37,6 +38,7 @@ function App() {
           <Route exact path="/login"><LoginPage  activeUser={activeUser} users={users} onLogin={user => setActiveUser(user)}/></Route>
         </Switch>
       </HashRouter>
+      <Footer></Footer>
     </div>
   );
 }

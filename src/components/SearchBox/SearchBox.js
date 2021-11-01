@@ -7,7 +7,7 @@ function SearchBox({placeholder, searchText, onSearchChange, results, onResultSe
     return (
         <div className="c-searchbox">
             <Form.Control type="text" placeholder={placeholder} value={searchText} 
-                onChange={e => onSearchChange(e.target.value)}/>
+                onChange={e => onSearchChange(e.target.value)} />
             <ListGroup className="result-box">
                 {results.map((result, index) => 
                     <ListGroup.Item action onClick={() => onResultSelected(index)}>
