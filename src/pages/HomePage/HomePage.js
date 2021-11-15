@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from "axios";
-import { CardDeck, Container } from "react-bootstrap";
+import { CardDeck, Container, Form } from "react-bootstrap";
 import SearchBox from "../../components/SearchBox/SearchBox";
 import Filter from "../../components/Filter/Filter";
 // import SongCard from '../../components/Song/SongCard';
@@ -43,6 +43,26 @@ function HomePage() {
     return (
         <div className="p-home">
             <Container>
+                <Form>
+                    {['radio'].map((type) => (
+                        <div key={`inline-${type}`} className="mb-3">
+                            <Form.Check
+                                inline
+                                label="חיפוש לפי שיר"
+                                name="group1"
+                                type={type}
+                                id={`inline-${type}-1`}
+                            />
+                            <Form.Check
+                                inline
+                                label="חיפוש לפי ספר"
+                                name="group1"
+                                type={type}
+                                id={`inline-${type}-2`}
+                            />
+                        </div>
+                    ))}
+                </Form>
                 <SearchBox
                     placeholder="חיפוש שיר ..."
                     searchText={searchSongText}

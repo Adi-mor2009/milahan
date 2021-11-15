@@ -1,0 +1,28 @@
+/* .p-contact .p-contact-bg-img {
+    background-image: linear-gradient(white,rgb(240, 239, 233), rgb(88, 89, 91),white);
+} */
+.p-contact-form {
+    /* margin: 15px;
+    padding: 20px;
+    border: solid 2px lightgrey;
+    border-radius: 1%; */
+    width: 60%;
+    margin: 0 auto;
+    /* height: 100%; */
+    /* margin: 50px auto;  */
+    padding: 10px;
+    border-radius: 1%; 
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, .3) 0%, rgba(231, 231, 231, .3) 22.39%, rgba(209, 209, 209,  .3) 42.6%, rgba(182, 182, 182, .3) 79.19%, rgba(156, 156, 156, .3) 104.86%);
+    /* background-image: linear-gradient( rgb(171, 171, 172), rgb(230, 233, 235)); */
+    color: black;
+    /* right: 30%;
+    top: -11%; */
+    background-color: transparent;
+    /* opacity: 0.5; */
+}
+
+#sendBtn {
+    /* display: flex;
+    justify-content: center; */
+    margin-right: auto;
+}
