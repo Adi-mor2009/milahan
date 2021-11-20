@@ -7,9 +7,11 @@ import Filter from "../../components/Filter/Filter";
 // import SongModel from '../../model/SongModel';
 
 function HomePage() {
-    const [song, setSongs] = useState([]);
+    const [songs, setSongs] = useState();
     const [searchSongText, setSearchSongText] = useState("");
     const [songResults, setSongResults] = useState([]);
+
+    const songsCards = songs !== undefined ? songs.map((song) => <SongCard song={song}></SongCard>) : [];
 
     function handleSongSearchChange(newSearchText) {
         setSearchSongText(newSearchText);
