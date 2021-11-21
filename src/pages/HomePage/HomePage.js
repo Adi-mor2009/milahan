@@ -17,11 +17,19 @@ function HomePage() {
         setSearchSongText(newSearchText);
 
         if (newSearchText) {
-            // // Here we should call TMDB
-            // const searchURL = "https://api.themoviedb.org/3/search/movie?api_key=c87aac96194f8ffb8edc34a066fa92de&query=" + newSearchText;
-            // axios.get(searchURL).then(response => {
-            //     setSongResults(response.data.results);
-            // });
+             //Here we should call the spring backend
+             const getURL = "http://localhost:8080/songs";
+             axios.get(getURL).then(respose => {
+                 console.log(respose.data);
+                 const data = respose.data;
+                 debugger
+                 setSongs(data.map((plainSong) => new SongModel(plainSong)));
+                 // // Here we should call TMDB
+                 // const searchURL = "https://api.themoviedb.org/3/search/movie?api_key=c87aac96194f8ffb8edc34a066fa92de&query=" + newSearchText;
+                 // axios.get(searchURL).then(response => {
+                 //     setSongResults(response.data.results);
+                 // });
+             });
         } else {
             setSongResults([]);
         }
