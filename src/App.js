@@ -47,7 +47,7 @@ function App() {
       <HashRouter>
         <Switch>
           <Route exact path="/" >
-            <HomePage />
+            <HomePage activeUser={activeUser}/>
           </Route>
           <Route exact path="/about"><AboutPage /></Route>
           <Route exact path="/edit"><EditPage /></Route>

@@ -1,0 +1,46 @@
+.c-song-card {
+    margin: 2px;
+    padding: 10px;
+}
+
+.c-song-card .card {
+    /* background-image: linear-gradient(rgb(240, 221, 188), rgb(174, 155, 123)); */
+    /* background-image: url('../../asserts/wall1.jpg'); */
+    border: none;
+    /* border-bottom: 1px solid rgba(0,0,0, .125); */
+}
+
+div.card-title {
+    display: inline;
+}
+
+div.col-md-8.c-song-info.col {
+    display:flex;
+    align-items: center;
+    /* color: white;
+    font-family: cursive;
+    font-weight: bold; */
+}
+
+.song-card-bottons {
+    display: inline;
+}
+
+@media (min-width: 992px) {
+    /* .c-song-card .card-title {
+        font-size: xx-large;
+    } */
+    .c-song-card .card {
+        /* background-image: linear-gradient(gray, white); */
+        /* background-image: linear-gradient(rgb(240, 221, 188), rgb(174, 155, 123)); */
+        /* background-image: url('../../asserts/wall1.jpg'); */
+    }
+    div.col-md-8.c-song-info.col {
+        display:flex;
+        align-items: center;
+        color: black;
+        /* font-size: x-large;
+        font-family: cursive;
+        font-weight: bold; */
+    }
+}
