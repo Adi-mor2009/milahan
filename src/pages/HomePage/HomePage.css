@@ -1,5 +1,12 @@
+
 .p-home-cards {
     padding: 5px;
+    position: relative;
+}
+
+.p-home-cards .p-home-spinner {
+    position: absolute;
+    right: 400px;
 }
 
 .ui.pagination.menu {
