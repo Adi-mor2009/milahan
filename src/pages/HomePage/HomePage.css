@@ -1,3 +1,8 @@
 .p-home-cards {
     padding: 5px;
 }
+
+.ui.pagination.menu {
+    margin: 10px !important;
+    direction: ltr;
+}
