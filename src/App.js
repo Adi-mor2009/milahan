@@ -3,6 +3,7 @@ import { HashRouter, Route, Switch } from 'react-router-dom';
 import HomePage from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import AboutPage from './pages/AboutPage/AboutPage';
+import BookPage from './pages/BookPage/BookPage';
 import ContactPage from './pages/ContactPage/ContactPage';
 import EditPage from './pages/EditPage/EditPage';
 import MainNavbar from './components/MainNavbar/MainNavbar';
@@ -49,6 +50,7 @@ function App() {
           <Route exact path="/" >
             <HomePage activeUser={activeUser}/>
           </Route>
+          <Route exact path="/book"><BookPage activeUser={activeUser}/></Route>
           <Route exact path="/about"><AboutPage /></Route>
           <Route exact path="/edit"><EditPage /></Route>
           {/* <Route exact path="/edit" >

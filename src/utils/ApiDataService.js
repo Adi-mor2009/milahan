@@ -6,8 +6,15 @@ const types = {
     BOOK: "books"
 }
 
-async function getData(type, pageNum) {
-    const getURL = SERVER_URL + type + "?pageNo=" + (pageNum - 1);
+async function getData(type, pageNum, pageSize, filter) {
+    //GET /cars?country=USA&sort=createDate:desc&size=100&offset=2&pageSize=5&pageNo=1
+    const dynamicUrlPart = (filter || pageNum) ? "?" : "";
+    const filterUrlPart = filter ? "name=" + filter +"&pageSize=" + pageSize: "";
+    const pageUrlPart = (filter && pageNum) ? "&pageNo=" + (pageNum - 1) : pageNum ? "pageNo=" + (pageNum - 1) : "";
+    //const getURL = SERVER_URL + type + "?pageNo=" + (pageNum - 1);
+    debugger
+    const getURL = SERVER_URL + type + dynamicUrlPart + filterUrlPart + pageUrlPart;
+    console.log(getURL);
     try {
         const res = await axios.get(getURL);
         return({response: res, error: null});

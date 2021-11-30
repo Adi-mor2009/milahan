@@ -1,0 +1,23 @@
+.p-book-cards {
+    padding: 5px;
+    position: relative;
+}
+
+.p-book-cards .p-home-spinner {
+    position: absolute;
+    right: 400px;
+}
+
+.ui.pagination.menu {
+    margin: 10px !important;
+    direction: ltr;
+}
+
+/* .form-check .form-check-input {
+    float: right !important;
+    margin-left: none !important;
+}
+
+.form-check .form-check-label {
+    padding-right: 20px;
+} */

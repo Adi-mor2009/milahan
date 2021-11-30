@@ -28,6 +28,7 @@ function HomePage({ activeUser }) {
     const [totalPages, setTotalPages] = useState(1);
     const [boundaryRange, setBoundaryRange] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [globalError, setGlobalError] = useState(false);
     let editable = false;
 
     const operations = {
@@ -39,7 +40,7 @@ function HomePage({ activeUser }) {
     useEffect(() => {
         (async () => {
             setLoading(true);
-            const response = await (await ApiDataService.getData(ApiDataService.types.SONG, page)).response;
+            const response = (await ApiDataService.getData(ApiDataService.types.SONG, page, undefined)).response;
             setLoading(false);
             if (response) {
                 const data = response.data.content;
@@ -56,27 +57,39 @@ function HomePage({ activeUser }) {
 
     const songsCards = songs !== undefined ? songs.map((song, index) => <SongCard key={index.toString()} song={song} isEditable={editable} onDelete={preperFotSongDelete} onEdit={preperForSongEdit}></SongCard>) : [];
 
-    function handleSongSearchChange(newSearchText) {
+    async function handleSongSearchChange(newSearchText) {
         setSearchSongText(newSearchText);
 
         if (newSearchText) {
-            //Here we should call the spring backend
-            // const getURL = "http://localhost:8080/songs?pageNo=" + page;
-            // axios.get(getURL).then(respose => {
-            //     console.log(respose.data);
-            //     const data = respose.data.content;
-            //     setTotalPages(respose.data.totalPages);
-            //     debugger
-            //     setSongs(data.map((plainSong) => new SongModel(plainSong)));
-                // // Here we should call TMDB
-                // const searchURL = "https://api.themoviedb.org/3/search/movie?api_key=c87aac96194f8ffb8edc34a066fa92de&query=" + newSearchText;
-                // axios.get(searchURL).then(response => {
-                //     setSongResults(response.data.results);
-                // });
-            // });
+            setLoading(true);
+            const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 100, newSearchText);
+            setLoading(false);
+            if (response.error) {
+                setGlobalError(true);
+            }
+            else {
+                if (response.response) {
+                    const data = response.response.data.content;
+                    setSongResults(data);
+                }
+            }
         } else {
             setSongResults([]);
         }
+    }
+
+    function handleSongCheckBySearch(result) {
+        debugger
+        setSearchSongText("");
+        setSongs(songResults.filter((plainSong, index) => index==result).map((plainSong) => new SongModel(plainSong)));
+        setSongResults([]);
+    }
+
+    function handleSearchEnter() {
+        debugger
+        setSearchSongText("");
+        setSongs(songResults.map((plainSong) => new SongModel(plainSong)));
+        setSongResults([]);
     }
 
     // function addSong(resultIndex) {
@@ -149,7 +162,7 @@ function HomePage({ activeUser }) {
 
     async function preperForSongEdit(id) {
         setLoading(true);
-        const response = await ApiDataService.getDataById(ApiDataService.types.SONG, id);
+        const response = await ApiDataService.getDataById(ApiDataService.types.SONG, id, undefined);
         setLoading(false);
         if (response.error) {
             setShowEditError(true);
@@ -200,7 +213,7 @@ function HomePage({ activeUser }) {
 
     async function handlePaginationChange(e, activePage) {
         setLoading(true);
-        const response = (await ApiDataService.getData(ApiDataService.types.SONG, activePage.activePage)).response;
+        const response = (await ApiDataService.getData(ApiDataService.types.SONG, activePage.activePage, undefined)).response;
         setLoading(false);
         if (response) {
             const data = response.data.content;
@@ -237,8 +250,9 @@ function HomePage({ activeUser }) {
                     placeholder="חיפוש שיר ..."
                     searchText={searchSongText}
                     onSearchChange={handleSongSearchChange}
-                    results={songResults.map(result => result.title)}
-                    onResultSelected={addSong} />
+                    onEnter={handleSearchEnter}
+                    results={songResults.map(result => result.title +", " + result.lyrics+", " + result.composer+", " +  result.firstWords)}
+                    onResultSelected={handleSongCheckBySearch} />
                 {/* <Filter
                     icon={<i className="bi bi-music-note"></i>}
                     // <i className="bi bi-funnel-fill"></i><i className="bi bi-search"></i>

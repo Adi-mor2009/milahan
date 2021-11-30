@@ -10,9 +10,17 @@
 }
 
 .c-searchbox > .result-box {
+    padding-left: 50px;
     position: absolute;
-    width: 100%;
+    direction: ltr;
+    width: 95%;
     z-index: 10;
+    max-height: 240%;
+    overflow-y: scroll;
+}
+
+.list-group-item {
+    direction: rtl;
 }
 
 input.form-control {
