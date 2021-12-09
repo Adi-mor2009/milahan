@@ -1,6 +1,5 @@
 export default class BookModel {
     constructor(plainBook) {
-        debugger
         this.id = plainBook.id;
         this.title = plainBook.title;
         this.subTitle = plainBook.subTitle;

@@ -3,7 +3,8 @@ import axios from "axios";
 const SERVER_URL = "http://localhost:8080/";
 const types = {
     SONG: "songs",
-    BOOK: "books"
+    BOOK: "books",
+    SUBJECT: "subjects"
 }
 
 async function getData(type, pageNum, pageSize, filter) {

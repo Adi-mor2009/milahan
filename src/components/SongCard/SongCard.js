@@ -15,6 +15,15 @@ function SongCard({ song, isEditable, onEdit, onDelete }) {
                 <span style={{ fontWeight: 'bold' }}> {bookItem.book.title}</span> עמוד: {bookItem.page}
             </div>
     );
+    const songSubjects = song.subjects.map(function(item) {
+        return item['name'];
+      });
+        // (subjectItem) =>
+        //     <div>
+        //         <i class="bi bi-dot"></i>
+        //         <span style={{ fontWeight: 'bold' }}> {subjectItem.name}</span>
+        //     </div>
+    // );
     console.log("!!!!!" + songBooks);
     const accordionPart = song.books.map((book, index) => <Accordion key={index.toString()}>
         <Card>
@@ -62,6 +71,10 @@ function SongCard({ song, isEditable, onEdit, onDelete }) {
                             <Card.Text>מחבר: {song.lyrics}</Card.Text>
                             <Card.Text>מלחין: {song.composer}</Card.Text>
                             <Card.Text>מילים ראשונות: {song.firstWords}</Card.Text>
+                            {songSubjects && songSubjects.length > 0 && <Card.Text>נושאים: {songSubjects.join(', ')}</Card.Text>}
+                            {/* <Card.Text className="listSubjects">
+                                {songSubjects}
+                            </Card.Text> */}
                             {song.books && song.books.length > 0 && <div>
                                 <Accordion key={"bookMainList"}>
                                     <Card>

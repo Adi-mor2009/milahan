@@ -12,6 +12,7 @@ function MainNavbar({ activeUser, onLogout }) {
                 <Nav className="ms-auto">
                     {/* <Nav.Link href="#/book">ספרים</Nav.Link> */}
                     <Nav.Link href="#/book">ספרים</Nav.Link>
+                    {activeUser &&  activeUser.role==0 ? <Nav.Link href="#/subject">נושאים</Nav.Link> : null}
                     <Nav.Link href="#/about">אודות</Nav.Link>
                     {/* {activeUser &&  activeUser.role==0 ? <Nav.Link href="#/edit">עריכה</Nav.Link> : null} */}
                     <Nav.Link href="#/contact">יצירת קשר</Nav.Link>

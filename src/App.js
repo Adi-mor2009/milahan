@@ -13,6 +13,7 @@ import UserModel from './model/UserModel';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import axios from 'axios';
+import SubjectPage from './pages/SubjectPage/SubjectPage';
 
 function App() {
   const [users, setUsers] = useState([]);//useState(usersJSON.map(plainUser => new UserModel(plainUser)));
@@ -51,6 +52,7 @@ function App() {
             <HomePage activeUser={activeUser}/>
           </Route>
           <Route exact path="/book"><BookPage activeUser={activeUser}/></Route>
+          <Route exact path="/subject"><SubjectPage activeUser={activeUser}/></Route>
           <Route exact path="/about"><AboutPage /></Route>
           <Route exact path="/edit"><EditPage /></Route>
           {/* <Route exact path="/edit" >
