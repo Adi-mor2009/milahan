@@ -11,5 +11,6 @@ export default class BookModel {
         this.publishYear = plainBook.publishYear;
         this.mmsid = plainBook.mmsid;
         this.isInPrivateCollection = plainBook.isInPrivateCollection == 1 ? true : false;
+        this.songs = plainBook.songs;
     }
 }

@@ -26,6 +26,10 @@ div.col-md-8.c-song-info.col {
     display: inline;
 }
 
+.btn-link {
+    text-decoration: none !important
+}
+
 @media (min-width: 992px) {
     /* .c-song-card .card-title {
         font-size: xx-large;

@@ -17,6 +17,7 @@ async function getData(type, pageNum, pageSize, filter) {
     console.log(getURL);
     try {
         const res = await axios.get(getURL);
+        debugger
         return({response: res, error: null});
     } catch (err) {
         console.error('Error while geting ' + type, err);

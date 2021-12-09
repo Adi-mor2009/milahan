@@ -5,5 +5,6 @@ export default class SongModel {
         this.lyrics = plainSong.lyrics;
         this.composer = plainSong.composer;
         this.firstWords = plainSong.firstWords;
+        this.books = plainSong.books;
     }
 }

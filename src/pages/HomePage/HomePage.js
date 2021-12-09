@@ -45,6 +45,7 @@ function HomePage({ activeUser }) {
             if (response) {
                 const data = response.data.content;
                 console.log(data);
+                debugger
                 setTotalPages(response.data.totalPages);
                 setSongs(data.map((plainSong) => new SongModel(plainSong)));
             }
@@ -62,7 +63,7 @@ function HomePage({ activeUser }) {
 
         if (newSearchText) {
             setLoading(true);
-            const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 100, newSearchText);
+            const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 5000, newSearchText);
             setLoading(false);
             if (response.error) {
                 setGlobalError(true);
