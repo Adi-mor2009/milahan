@@ -24,7 +24,6 @@ function SongCard({ song, isEditable, onEdit, onDelete }) {
         //         <span style={{ fontWeight: 'bold' }}> {subjectItem.name}</span>
         //     </div>
     // );
-    console.log("!!!!!" + songBooks);
     const accordionPart = song.books.map((book, index) => <Accordion key={index.toString()}>
         <Card>
             <Accordion.Toggle as={Card.Header} eventKey={index.toString()}>
@@ -43,7 +42,7 @@ function SongCard({ song, isEditable, onEdit, onDelete }) {
                     {book.book.publisher && <Card.Text>הוצאה לאור: {book.book.publisher}</Card.Text>}
                     {book.book.publishPlace && <Card.Text>מקום הוצאה לאור: {book.book.publishPlace}</Card.Text>}
                     {book.book.publishYear && <Card.Text>שנת הוצאה לאור: {book.book.publishYear}</Card.Text>}
-                    {book.book.mmsid && <Card.Text>מספר מערכת: {book.book.mmsid}</Card.Text>}
+                    {book.book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה ({book.book.mmsid})</Card.Text></Card.Link>}
                     {isEditable && <Card.Text> {book.book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
                     {isEditable && <Card.Text>{book.book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
                 </Card.Body>
@@ -57,6 +56,9 @@ function SongCard({ song, isEditable, onEdit, onDelete }) {
                     {isEditable && <div className="song-card-bottons">
                         <Button variant="light" onClick={() => onEdit(song.id)}><i className="bi bi-pencil" style={{ color: 'lightskyblue', fontWeight: 'bold' }}></i></Button>
                         <Button variant="light" onClick={() => onDelete(song.id)}><i className="bi bi-trash" style={{ color: 'red' }}></i></Button>
+                        <Card.Title>{song.title}</Card.Title>
+                    </div>}
+                    {!isEditable && <div className="song-card-bottons">
                         <Card.Title>{song.title}</Card.Title>
                     </div>}
                 </Card.Header>

@@ -1,6 +1,9 @@
 import { Accordion, Button, Card, Col, Row } from "react-bootstrap";
 import './BookCard.css';
-import image from '../../asserts/songBookCardImg.png';
+//import image from '../../asserts/songBookCardImg.png';
+//import image from '../../asserts/istockphoto-450576849-1024x1024.jpg';
+//import image from '../../asserts/istockphoto-457231929-1024x1024.jpg';
+import image from '../../asserts/istockphoto-1146829288-1024x1024.jpg';
 import ContextAwareToggle from "../ContextAwareToggle/ContexAwareToggle";
 
 function BookCard({ book, isEditable, onEdit, onDelete }) {
@@ -42,6 +45,9 @@ function BookCard({ book, isEditable, onEdit, onDelete }) {
                         <Button variant="light" onClick={() => onDelete(book.id)}><i className="bi bi-trash" style={{ color: 'red' }}></i></Button>
                         <Card.Title>{book.title}</Card.Title>
                     </div>}
+                    {!isEditable && <div className="song-card-bottons">
+                        <Card.Title>{book.title}</Card.Title>
+                    </div>}
                 </Card.Header>
                 <Row className='no-gutters'>
                     <Col className="col-md-4 c-book-img">
@@ -57,7 +63,7 @@ function BookCard({ book, isEditable, onEdit, onDelete }) {
                             {book.publisher && <Card.Text>הוצאה לאור: {book.publisher}</Card.Text>}
                             {book.publishPlace && <Card.Text>מקום הוצאה לאור: {book.publishPlace}</Card.Text>}
                             {book.publishYear && <Card.Text>שנת הוצאה לאור: {book.publishYear}</Card.Text>}
-                            {book.mmsid && <Card.Text>מספר מערכת: {book.mmsid}</Card.Text>}
+                            {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה ({book.mmsid})</Card.Text></Card.Link>}
                             {isEditable && <Card.Text> {book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
                             {isEditable && <Card.Text>{book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
                             {book.songs && book.songs.length > 0 && <div>

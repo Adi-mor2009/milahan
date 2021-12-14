@@ -1,3 +1,5 @@
+import SubjectModel from "./SubjectModel";
+
 export default class SongModel {
     constructor(plainSong) {
         this.id = plainSong.id;
@@ -6,6 +8,6 @@ export default class SongModel {
         this.composer = plainSong.composer;
         this.firstWords = plainSong.firstWords;
         this.books = plainSong.books;
-        this.subjects = plainSong.subjects;
+        this.subjects = plainSong.subjects.map((plainSubject) => new SubjectModel(plainSubject));//plainSong.subjects;
     }
 }

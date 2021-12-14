@@ -1,12 +1,14 @@
 import { useState, useEffect, lazy } from 'react';
-import { Container, Form, InputGroup, Modal, Alert, Button, Spinner } from "react-bootstrap";
+import { Container, Form, InputGroup, Modal, Alert, Button, Spinner, Col } from "react-bootstrap";
 import SearchBox from "../../components/SearchBox/SearchBox";
+import { Dropdown } from 'semantic-ui-react'
 import Filter from "../../components/Filter/Filter";
 import SongCard from "../../components/SongCard/SongCard";
 import SongModel from '../../model/SongModel';
 import { Pagination } from 'semantic-ui-react';
 import './HomePage.css';
 import ApiDataService from '../../utils/ApiDataService';
+import SubjectModel from '../../model/SubjectModel';
 
 function HomePage({ activeUser }) {
     const [songs, setSongs] = useState();
@@ -22,6 +24,7 @@ function HomePage({ activeUser }) {
     const [lyrics, setLyrics] = useState("");
     const [composer, setComposer] = useState("");
     const [firstWords, setFirstWords] = useState(undefined);
+    const [subjects, setSubjects] = useState([]);
     const [songForDel, setSongForDel] = useState(undefined);
     const [songForEdit, setSongForEdit] = useState(undefined);
     const [page, setPage] = useState(1);
@@ -29,6 +32,13 @@ function HomePage({ activeUser }) {
     const [boundaryRange, setBoundaryRange] = useState(1);
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState(false);
+    const [subjectMultiSelectValues, setSubjectMultiSelectValues] = useState([]);
+    const [subjectsValues, setSubjectsValues] = useState([]);
+    const stateOptions = subjectsValues.map((subjectsValue, index) => ({
+        key: subjectsValue.id,
+        text: subjectsValue.name,
+        value: subjectsValue.name,
+    }))
     let editable = false;
 
     const operations = {
@@ -48,6 +58,18 @@ function HomePage({ activeUser }) {
                 debugger
                 setTotalPages(response.data.totalPages);
                 setSongs(data.map((plainSong) => new SongModel(plainSong)));
+                // debugger
+                // const subjectArr = data.map((plainSong) => plainSong.subjects);
+                // setSubjectMultiSelectValues(subjectArr.map((plainSubject) => new SubjectModel(plainSubject)));
+            }
+
+            setLoading(true);
+            const subjectsResponse = (await ApiDataService.getData(ApiDataService.types.SUBJECT, undefined, 5000)).response;
+            setLoading(false);
+            if (subjectsResponse) {
+                const data = subjectsResponse.data.content;
+                debugger
+                setSubjectsValues(data.map((plainSubject) => new SubjectModel(plainSubject)));
             }
         })()
     }, [])
@@ -82,7 +104,7 @@ function HomePage({ activeUser }) {
     function handleSongCheckBySearch(result) {
         debugger
         setSearchSongText("");
-        setSongs(songResults.filter((plainSong, index) => index==result).map((plainSong) => new SongModel(plainSong)));
+        setSongs(songResults.filter((plainSong, index) => index == result).map((plainSong) => new SongModel(plainSong)));
         setSongResults([]);
     }
 
@@ -93,25 +115,10 @@ function HomePage({ activeUser }) {
         setSongResults([]);
     }
 
-    // function addSong(resultIndex) {
-    //     //Get more info of actor
-    //     // const songId = songResults[resultIndex].id;
-    //     // const getURL = "https://api.themoviedb.org/3/movie/" + songId + "?api_key=c87aac96194f8ffb8edc34a066fa92de&language=en-US";
-    //     // axios.get(getURL).then(response => {
-    //     //     const songToAdd = response.data;
-    //     //     // Adding the movie to the view
-    //     //     setSongs(songs.concat(new SongModel(songToAdd.title, songToAdd.runtime, "bla bla", songToAdd.vote_average, songToAdd.overview, "https://image.tmdb.org/t/p/w500" + songToAdd.poster_path, songToAdd.homepage)));
-
-    //     //     // Cleaning up the SearchBox
-    //     //     setSongResults([]);
-    //     //     setSearchSongText("");
-    //     // });
-    // }
-
     async function addSong() {
         // validation code is missing here...
         debugger
-        const data = { title: title, lyrics: lyrics, composer: composer, firstWords: firstWords };
+        const data = { title: title, lyrics: lyrics, composer: composer, firstWords: firstWords, subjects: subjectMultiSelectValues };
         setLoading(true);
         const response = await ApiDataService.postData(ApiDataService.types.SONG, data);
         setLoading(false);
@@ -131,6 +138,7 @@ function HomePage({ activeUser }) {
         setLyrics("");
         setComposer("");
         setFirstWords("");
+        setSubjectMultiSelectValues([]);
     }
 
     async function removeSong() {
@@ -148,7 +156,7 @@ function HomePage({ activeUser }) {
     }
 
     async function editSong() {
-        const data = { title: title, lyrics: lyrics, composer: composer, firstWords: firstWords };
+        const data = { title: title, lyrics: lyrics, composer: composer, firstWords: firstWords, subjects: subjectMultiSelectValues };
         setLoading(true);
         const songToUpdate = await ApiDataService.putData(ApiDataService.types.SONG, songForEdit, data);
         setLoading(false);
@@ -175,6 +183,7 @@ function HomePage({ activeUser }) {
             setLyrics(songToEdit.lyrics);
             setComposer(songToEdit.composer);
             setFirstWords(songToEdit.firstWords);
+            setSubjectMultiSelectValues(songToEdit.subjects);
             setSongForEdit(id);
             setShowModalEditSong(true);
         }
@@ -194,6 +203,7 @@ function HomePage({ activeUser }) {
                 setLyrics("");
                 setComposer("");
                 setFirstWords("");
+                setSubjectMultiSelectValues([]);
                 break;
             case operations.UPDATE:
                 setShowModalEditSong(false);
@@ -203,6 +213,7 @@ function HomePage({ activeUser }) {
                 setLyrics("");
                 setComposer("");
                 setFirstWords("");
+                setSubjectMultiSelectValues([]);
                 break;
             case operations.DELETE:
                 setShowModalRemoveSong(false);
@@ -223,6 +234,39 @@ function HomePage({ activeUser }) {
             setSongs(data.map((plainSong) => new SongModel(plainSong)));
         }
     }
+
+    function onSelectedSubjectsChange(prop, data) {
+        console.log(prop);
+        console.log(data);
+        debugger
+        var toRemoveArr = subjectMultiSelectValues.filter(val => !data.value.includes(val.id));
+        console.log(toRemoveArr);
+        var toAddArr = data.value.filter(item => !((subjectMultiSelectValues.map(x => x.id)).includes(item)));
+        console.log(toAddArr);
+
+        toRemoveArr.forEach(function (item) {
+            let index = subjectMultiSelectValues.findIndex(x => x.id == item.id);
+            setSubjectMultiSelectValues(subjectMultiSelectValues => subjectMultiSelectValues.slice(0, index).concat(subjectMultiSelectValues.slice(index + 1, subjectMultiSelectValues.length)));
+        });
+
+        for (let j = 0; j < toAddArr.length; j++) {
+            for (let i = 0; i < data.options.length; i++) {
+                if (data.options[i].value == toAddArr[j]) {
+                    const name = data.options[i].text;
+                    setSubjectMultiSelectValues(subjectMultiSelectValues => subjectMultiSelectValues.concat({ id: toAddArr[j], name: name }));
+                    break;
+                }
+            }
+        }
+    }
+
+    const subjectsValuesNames = subjectsValues.map((option, index) => (
+        { key: option.id, text: option.name, value: option.id }
+    ));
+
+    const subjectDefaultValuesToShow = subjectMultiSelectValues.map((option, index) => (
+        option.id
+    ));
 
     return (
         <div className="p-home">
@@ -252,7 +296,7 @@ function HomePage({ activeUser }) {
                     searchText={searchSongText}
                     onSearchChange={handleSongSearchChange}
                     onEnter={handleSearchEnter}
-                    results={songResults.map(result => result.title +", " + result.lyrics+", " + result.composer+", " +  result.firstWords)}
+                    results={songResults.map(result => result.title + ", " + result.lyrics + ", " + result.composer + ", " + result.firstWords)}
                     onResultSelected={handleSongCheckBySearch} />
                 {/* <Filter
                     icon={<i className="bi bi-music-note"></i>}
@@ -265,7 +309,7 @@ function HomePage({ activeUser }) {
                     <Button variant="link" onClick={() => setShowModalNewSong(true)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i> הוספת שיר חדש </Button>
                 </div>}
                 <Modal show={showModalNewSong} onHide={() => handleClose(operations.CREATE)} backdrop="static" keyboard={false}>
-                    <Modal.Header closeButton>
+                    <Modal.Header>
                         <Modal.Title>הוספת שיר חדש</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -318,6 +362,18 @@ function HomePage({ activeUser }) {
                                         value={firstWords} onChange={e => setFirstWords(e.target.value)} />
                                 </InputGroup>
                             </Form.Group>
+
+                            <Form.Group as={Col} controlId="subjectMultiSelectField">
+                                <Form.Label>בחירת נושאי שירים</Form.Label>
+                                <Dropdown
+                                    placeholder='נושאי שיר'
+                                    fluid
+                                    multiple
+                                    selection
+                                    options={subjectsValuesNames}
+                                    onChange={(props, data) => { onSelectedSubjectsChange(props, data) }} />
+                            </Form.Group>
+
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
@@ -352,7 +408,7 @@ function HomePage({ activeUser }) {
                 </Modal>
 
                 <Modal show={showModalEditSong} onHide={() => handleClose(operations.UPDATE)} backdrop="static" keyboard={false}>
-                    <Modal.Header closeButton>
+                    <Modal.Header>
                         <Modal.Title>עריכת שיר</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -404,6 +460,18 @@ function HomePage({ activeUser }) {
                                     <Form.Control type="text" placeholder="3 מילים ראשונות בשיר"
                                         value={firstWords} onChange={e => setFirstWords(e.target.value)} />
                                 </InputGroup>
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="subjectMultiSelectField">
+                                <Form.Label>בחירת נושאי שירים</Form.Label>
+                                <Dropdown
+                                    placeholder='נושאי שיר'
+                                    fluid
+                                    multiple
+                                    selection
+                                    options={subjectsValuesNames}
+                                    onChange={(props, data) => { onSelectedSubjectsChange(props, data) }}
+                                    defaultValue={subjectDefaultValuesToShow} />
                             </Form.Group>
                         </Form>
                     </Modal.Body>

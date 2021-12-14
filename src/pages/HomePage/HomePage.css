@@ -13,3 +13,23 @@
     margin: 10px !important;
     direction: ltr;
 }
+
+.ui.dropdown .menu .selected.item {
+    text-align: right;
+    direction: rtl;
+}
+
+.ui.dropdown .menu>.item {
+    text-align: right;
+    direction: rtl;
+}
+
+.ui.selection.dropdown .menu>.item {
+    text-align: right;
+    direction: rtl;
+}
+
+.ui.fluid.dropdown {
+    text-align: right;
+    direction: rtl;
+}
