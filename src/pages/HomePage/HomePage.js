@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy } from 'react';
+import { useState, useEffect, lazy, useRef } from 'react';
 import { Container, Form, InputGroup, Modal, Alert, Button, Spinner, Col } from "react-bootstrap";
 import SearchBox from "../../components/SearchBox/SearchBox";
 import { Dropdown } from 'semantic-ui-react'
@@ -17,14 +17,24 @@ function HomePage({ activeUser }) {
     const [showModalNewSong, setShowModalNewSong] = useState(false);
     const [showModalEditSong, setShowModalEditSong] = useState(false);
     const [showModalRemoveSong, setShowModalRemoveSong] = useState(false);
+    const [showModalRemoveSongBook, setShowModalRemoveSongBook] = useState(false);
     const [showSignupError, setShowSignupError] = useState(false)
     const [showRemoveError, setShowRemoveError] = useState(false);
     const [showEditError, setShowEditError] = useState(false);
+    const [showRemoveSongBookError, setShowRemoveSongBookError] = useState(false);
     const [title, setTitle] = useState("");
     const [lyrics, setLyrics] = useState("");
     const [composer, setComposer] = useState("");
     const [firstWords, setFirstWords] = useState(undefined);
-    const [subjects, setSubjects] = useState([]);
+    const [subjectMultiSelectValues, setSubjectMultiSelectValues] = useState([]);
+    const [subjectsValues, setSubjectsValues] = useState([]); //All subjects
+    const subjectsValuesNames = subjectsValues.map((option, index) => (
+        { key: option.id, text: option.name, value: option.id }
+    ));
+    const subjectDefaultValuesToShow = subjectMultiSelectValues.map((option, index) => (
+        option.id
+    ));
+    const [books, setBooks] = useState([]);
     const [songForDel, setSongForDel] = useState(undefined);
     const [songForEdit, setSongForEdit] = useState(undefined);
     const [page, setPage] = useState(1);
@@ -32,13 +42,7 @@ function HomePage({ activeUser }) {
     const [boundaryRange, setBoundaryRange] = useState(1);
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState(false);
-    const [subjectMultiSelectValues, setSubjectMultiSelectValues] = useState([]);
-    const [subjectsValues, setSubjectsValues] = useState([]);
-    const stateOptions = subjectsValues.map((subjectsValue, index) => ({
-        key: subjectsValue.id,
-        text: subjectsValue.name,
-        value: subjectsValue.name,
-    }))
+
     let editable = false;
 
     const operations = {
@@ -78,7 +82,7 @@ function HomePage({ activeUser }) {
         editable = true;
     }
 
-    const songsCards = songs !== undefined ? songs.map((song, index) => <SongCard key={index.toString()} song={song} isEditable={editable} onDelete={preperFotSongDelete} onEdit={preperForSongEdit}></SongCard>) : [];
+    const songsCards = songs !== undefined ? songs.map((song, index) => <SongCard key={index.toString()} song={song} isEditable={editable} onDelete={preperFotSongDelete} onEdit={preperForSongEdit} onBookDelete={deleteBook}></SongCard>) : [];
 
     async function handleSongSearchChange(newSearchText) {
         setSearchSongText(newSearchText);
@@ -156,7 +160,8 @@ function HomePage({ activeUser }) {
     }
 
     async function editSong() {
-        const data = { title: title, lyrics: lyrics, composer: composer, firstWords: firstWords, subjects: subjectMultiSelectValues };
+        debugger
+        const data = { title: title, lyrics: lyrics, composer: composer, firstWords: firstWords, subjects: subjectMultiSelectValues, books: books };
         setLoading(true);
         const songToUpdate = await ApiDataService.putData(ApiDataService.types.SONG, songForEdit, data);
         setLoading(false);
@@ -169,11 +174,11 @@ function HomePage({ activeUser }) {
         }
     }
 
-    async function preperForSongEdit(id) {
+    async function preperForSongEdit(id, notModal) {
         setLoading(true);
         const response = await ApiDataService.getDataById(ApiDataService.types.SONG, id, undefined);
         setLoading(false);
-        if (response.error) {
+        if (response.error && !notModal) {
             setShowEditError(true);
         }
         else {
@@ -184,14 +189,29 @@ function HomePage({ activeUser }) {
             setComposer(songToEdit.composer);
             setFirstWords(songToEdit.firstWords);
             setSubjectMultiSelectValues(songToEdit.subjects);
+            setBooks(songToEdit.books);
             setSongForEdit(id);
-            setShowModalEditSong(true);
+            if (!notModal) {
+                setShowModalEditSong(true);
+            }
+            return songToEdit;
         }
     }
 
     function preperFotSongDelete(id) {
         setSongForDel(id);
         setShowModalRemoveSong(true);
+    }
+
+    async function deleteBook(songId, bookId) {
+        console.log("Delete book id=" + bookId + "for song id=" + songId);
+        debugger
+        const songToEdit = await preperForSongEdit(songId, true);
+        const bookToDeleteIndex = songToEdit.books.findIndex(b => b.book.id == bookId);
+        setBooks(songToEdit.books.slice(0, bookToDeleteIndex).concat(songToEdit.books.slice(bookToDeleteIndex + 1, songToEdit.books.length)));
+        setShowModalRemoveSongBook(true);
+        // setBooks(books => books.slice(0, bookToDeleteIndex).concat(books.slice(bookToDeleteIndex + 1, books.length)));
+        //editSong();
     }
 
     function handleClose(operation) {
@@ -208,12 +228,14 @@ function HomePage({ activeUser }) {
             case operations.UPDATE:
                 setShowModalEditSong(false);
                 setShowEditError(false);
+                setShowModalRemoveSongBook(false);
                 setSongForEdit(undefined);
                 setTitle("");
                 setLyrics("");
                 setComposer("");
                 setFirstWords("");
                 setSubjectMultiSelectValues([]);
+                setBooks([]);
                 break;
             case operations.DELETE:
                 setShowModalRemoveSong(false);
@@ -236,9 +258,6 @@ function HomePage({ activeUser }) {
     }
 
     function onSelectedSubjectsChange(prop, data) {
-        console.log(prop);
-        console.log(data);
-        debugger
         var toRemoveArr = subjectMultiSelectValues.filter(val => !data.value.includes(val.id));
         console.log(toRemoveArr);
         var toAddArr = data.value.filter(item => !((subjectMultiSelectValues.map(x => x.id)).includes(item)));
@@ -259,14 +278,6 @@ function HomePage({ activeUser }) {
             }
         }
     }
-
-    const subjectsValuesNames = subjectsValues.map((option, index) => (
-        { key: option.id, text: option.name, value: option.id }
-    ));
-
-    const subjectDefaultValuesToShow = subjectMultiSelectValues.map((option, index) => (
-        option.id
-    ));
 
     return (
         <div className="p-home">
@@ -390,7 +401,7 @@ function HomePage({ activeUser }) {
                     {songsCards}
                 </div>
                 <Modal show={showModalRemoveSong} onHide={() => handleClose(operations.DELETE)} backdrop="static" keyboard={false}>
-                    <Modal.Header closeButton>
+                    <Modal.Header>
                         <Modal.Title>מחיקת שיר</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -406,6 +417,25 @@ function HomePage({ activeUser }) {
                         </Button>
                     </Modal.Footer>
                 </Modal>
+
+                <Modal show={showModalRemoveSongBook} onHide={() => handleClose(operations.UPDATE)} backdrop="static" keyboard={false}>
+                    <Modal.Header>
+                        <Modal.Title>מחיקת ספר לשיר</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {showRemoveSongBookError ? <Alert variant="danger">שגיאה בהסרה!</Alert> : null}
+                        האם פעולת מחיקת הספר לשיר רצויה?
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={editSong}>
+                            כן
+                        </Button>
+                        <Button variant="primary" onClick={() => handleClose(operations.UPDATE)}>
+                            לא
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                
 
                 <Modal show={showModalEditSong} onHide={() => handleClose(operations.UPDATE)} backdrop="static" keyboard={false}>
                     <Modal.Header>

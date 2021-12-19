@@ -30,6 +30,11 @@ div.col-md-8.c-song-info.col {
     text-decoration: none !important
 }
 
+.song-book-card-bottons {
+    position: relative;
+    margin-left: auto;;
+}
+
 @media (min-width: 992px) {
     /* .c-song-card .card-title {
         font-size: xx-large;

@@ -3,16 +3,15 @@ import './BookCard.css';
 //import image from '../../asserts/songBookCardImg.png';
 //import image from '../../asserts/istockphoto-450576849-1024x1024.jpg';
 //import image from '../../asserts/istockphoto-457231929-1024x1024.jpg';
-import image from '../../asserts/istockphoto-1146829288-1024x1024.jpg';
+import image from '../../asserts/iStock-1146829288.jpeg';
 import ContextAwareToggle from "../ContextAwareToggle/ContexAwareToggle";
 
-function BookCard({ book, isEditable, onEdit, onDelete }) {
-    debugger
+function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete }) {
     const bookSongs = book.songs.map(
         (songItem) =>
             <div>
                 <i class="bi bi-music-note-list"></i>
-                <span style={{ fontWeight: 'bold' }}> {songItem.song.title}</span> עמוד: {songItem.page}
+                <span style={{ fontWeight: 'bold' }}> {songItem.title}</span> עמוד: {songItem.page}
             </div>
     );
     const accordionPart = book.songs.map((song, index) => <Accordion key={index.toString()}>
@@ -21,16 +20,17 @@ function BookCard({ book, isEditable, onEdit, onDelete }) {
                 <ContextAwareToggle as={Button} style={{ color: 'black' }} variant="link" eventKey={index.toString()}
                 // style={currentActiveKey === index.toString() ? { backgroundColor: "lightskyblue" } : null}
                 >
+                    <Button variant="light" onClick={() => onSongDelete(song.id, book.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
                     <span style={{ color: 'black' }}><i class="bi bi-music-note-list"></i></span>
-                    <span style={{ fontWeight: 'bold', color: 'black' }}> {song.song.title}</span> <span style={{ color: 'black' }}>עמוד: {song.page} </span>
+                    <span style={{ fontWeight: 'bold', color: 'black' }}> {song.title}</span> <span style={{ color: 'black' }}>עמוד: {song.page} </span>
                 </ContextAwareToggle>
             </Accordion.Toggle>
             <Accordion.Collapse eventKey={index.toString()}>
                 <Card.Body>
-                    {song.song.title && <Card.Text>שם: {song.song.title}</Card.Text>}
-                    {song.song.lyrics && <Card.Text>מחבר: {song.song.lyrics}</Card.Text>}
-                    {song.song.composer && <Card.Text>מלחין: {song.song.composer}</Card.Text>}
-                    {song.song.firstWords && <Card.Text> מילים ראשונות: {song.song.firstWords}</Card.Text>}
+                    {song.title && <Card.Text>שם: {song.title}</Card.Text>}
+                    {song.lyrics && <Card.Text>מחבר: {song.lyrics}</Card.Text>}
+                    {song.composer && <Card.Text>מלחין: {song.composer}</Card.Text>}
+                    {song.firstWords && <Card.Text> מילים ראשונות: {song.firstWords}</Card.Text>}
                 </Card.Body>
             </Accordion.Collapse>
         </Card>

@@ -40,33 +40,33 @@ function LoginPage({ activeUser, users, onLogin }) {
                     <Row>
                         <Col>
                             <div className="p-form-login">
-                                <h1>Login to Milahan</h1>
+                                <h1>כניסה למילחן</h1>
                                 {showInvalidLogin ? <Alert variant="danger">Invalid Credentials!</Alert> : null}
                                 <Form onSubmit={login}>
                                     <Form.Group controlId="formBasicEmail">
-                                        <Form.Label>Email address</Form.Label>
+                                        <Form.Label>כתובת אימייל</Form.Label>
                                         <InputGroup>
                                             <InputGroup.Prepend>
                                                 <InputGroup.Text id="basic-addon1"><i className="bi bi-envelope-fill"></i></InputGroup.Text>
                                             </InputGroup.Prepend>
-                                            <Form.Control type="email" placeholder="Enter email"
+                                            <Form.Control type="email" placeholder="הכנסת כתובת אימייל"
                                                 value={email} onChange={e => setEmail(e.target.value)} />
                                             <InputGroup.Append>
-                                                <InputGroup.Text id="basic-addon2">@example.com</InputGroup.Text>
+                                                <InputGroup.Text id="basic-addon2">example.com@</InputGroup.Text>
                                             </InputGroup.Append>
                                         </InputGroup>
                                         <Form.Text className="text-muted">
-                                            We'll never share your email with anyone else.
+                                            לעולם לא נחלוק את האימייל שלך עם אף אחד
                                         </Form.Text>
                                     </Form.Group>
 
                                     <Form.Group controlId="formBasicPassword">
-                                        <Form.Label>Password</Form.Label>
+                                        <Form.Label>סיסמא</Form.Label>
                                         <InputGroup className="mb-3">
                                             <InputGroup.Prepend>
                                                 <InputGroup.Text id="basic-addon1"><i className="bi bi-lock-fill"></i></InputGroup.Text>
                                             </InputGroup.Prepend>
-                                            <Form.Control type="password" placeholder="Password"
+                                            <Form.Control type="password" placeholder="הכנסת סיסמא"
                                                 value={pwd} onChange={e => setPwd(e.target.value)} />
                                             <InputGroup.Append>
                                                 <InputGroup.Text id="basic-addon2"><i className="bi bi-unlock-fill"></i></InputGroup.Text>
@@ -74,7 +74,7 @@ function LoginPage({ activeUser, users, onLogin }) {
                                         </InputGroup>
                                     </Form.Group>
                                     <Button variant="success" type="submit" block>
-                                        Login
+                                        כניסה
                                     </Button>
                                 </Form>
                             </div>

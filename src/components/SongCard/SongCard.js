@@ -7,12 +7,12 @@ import ContextAwareToggle from "../ContextAwareToggle/ContexAwareToggle";
 // import image from '../../asserts/colorNote.png';
 // import image from '../../asserts/iStock-185090272.jpg';
 
-function SongCard({ song, isEditable, onEdit, onDelete }) {
+function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete }) {
     const songBooks = song.books.map(
         (bookItem) =>
             <div>
                 <i class="bi bi-book"></i>
-                <span style={{ fontWeight: 'bold' }}> {bookItem.book.title}</span> עמוד: {bookItem.page}
+                <span style={{ fontWeight: 'bold' }}> {bookItem.title}</span> עמוד: {bookItem.page}
             </div>
     );
     const songSubjects = song.subjects.map(function(item) {
@@ -30,21 +30,22 @@ function SongCard({ song, isEditable, onEdit, onDelete }) {
                 <ContextAwareToggle as={Button} style={{color: 'black'}} variant="link" eventKey={index.toString()}
                 // style={currentActiveKey === index.toString() ? { backgroundColor: "lightskyblue" } : null}
                 >
+                    <Button variant="light" onClick={() => onBookDelete(song.id, book.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
                     <span style={{ color: 'black' }}><i class="bi bi-book"></i></span>
-                    <span style={{ fontWeight: 'bold', color: 'black' }}> {book.book.title}</span> <span style={{ color: 'black' }}>עמוד: {book.page} </span>
+                    <span style={{ fontWeight: 'bold', color: 'black' }}> {book.title}</span> <span style={{ color: 'black' }}>עמוד: {book.page} </span>
                 </ContextAwareToggle>
             </Accordion.Toggle>
             <Accordion.Collapse eventKey={index.toString()}>
                 <Card.Body>
-                    {book.book.subTitle && <Card.Text>תת כותרת: {book.book.subTitle}</Card.Text>}
-                    {book.book.author && <Card.Text>מחבר: {book.book.author}</Card.Text>}
-                    {book.book.series && <Card.Text>סדרה: {book.book.series}</Card.Text>}
-                    {book.book.publisher && <Card.Text>הוצאה לאור: {book.book.publisher}</Card.Text>}
-                    {book.book.publishPlace && <Card.Text>מקום הוצאה לאור: {book.book.publishPlace}</Card.Text>}
-                    {book.book.publishYear && <Card.Text>שנת הוצאה לאור: {book.book.publishYear}</Card.Text>}
-                    {book.book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה ({book.book.mmsid})</Card.Text></Card.Link>}
-                    {isEditable && <Card.Text> {book.book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
-                    {isEditable && <Card.Text>{book.book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
+                    {book.subTitle && <Card.Text>תת כותרת: {book.subTitle}</Card.Text>}
+                    {book.author && <Card.Text>מחבר: {book.author}</Card.Text>}
+                    {book.series && <Card.Text>סדרה: {book.series}</Card.Text>}
+                    {book.publisher && <Card.Text>הוצאה לאור: {book.publisher}</Card.Text>}
+                    {book.publishPlace && <Card.Text>מקום הוצאה לאור: {book.publishPlace}</Card.Text>}
+                    {book.publishYear && <Card.Text>שנת הוצאה לאור: {book.publishYear}</Card.Text>}
+                    {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה ({book.mmsid})</Card.Text></Card.Link>}
+                    {isEditable && <Card.Text> {book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
+                    {isEditable && <Card.Text>{book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
                 </Card.Body>
             </Accordion.Collapse>
         </Card>

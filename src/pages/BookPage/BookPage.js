@@ -15,9 +15,11 @@ function BookPage({ activeUser }) {
     const [showModalNewBook, setShowModalNewBook] = useState(false);
     const [showModalEditBook, setShowModalEditBook] = useState(false);
     const [showModalRemoveBook, setShowModalRemoveBook] = useState(false);
+    const [showModalRemoveBookSong, setShowModalRemoveBookSong] = useState(false);
     const [showSignupError, setShowSignupError] = useState(false)
     const [showRemoveError, setShowRemoveError] = useState(false);
     const [showEditError, setShowEditError] = useState(false);
+    const [showRemoveBookSongError, setShowRemoveBookSongError] = useState(false);
     const [title, setTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
     const [author, setAuthor] = useState("");
@@ -27,6 +29,7 @@ function BookPage({ activeUser }) {
     const [publishYear, setPublishYear] = useState("");
     const [mmsid, setMmsid] = useState("");
     const [isInPrivateCollection, setIsInPrivateCollection] = useState(false);
+    const [songs, setSongs] = useState([]);
     const [bookForDel, setBookForDel] = useState(undefined);
     const [bookForEdit, setBookForEdit] = useState(undefined);
     const [page, setPage] = useState(1);
@@ -59,7 +62,7 @@ function BookPage({ activeUser }) {
         editable = true;
     }
 
-    const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit}></BookCard>) : [];
+    const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit}  onSongDelete={deleteSong}></BookCard>) : [];
 
     function handleBookSearchChange(newSearchText) {
         setSearchBookText(newSearchText);
@@ -145,8 +148,9 @@ function BookPage({ activeUser }) {
     }
 
     async function editBook() {
-        const data = { title: title, subTitle: subTitle, author: author, series: series, publisher: publisher, publishPlace: publishPlace, publishYear: publishYear, mmsid: mmsid, isInPrivateCollection: isInPrivateCollection ? 1 : 0 };
+        const data = { title: title, subTitle: subTitle, author: author, series: series, publisher: publisher, publishPlace: publishPlace, publishYear: publishYear, mmsid: mmsid, isInPrivateCollection: isInPrivateCollection ? 1 : 0, songs: songs };
         setLoading(true);
+        debugger
         const bookToUpdate = await ApiDataService.putData(ApiDataService.types.BOOK, bookForEdit, data);
         setLoading(false);
         if (bookToUpdate.error) {
@@ -158,11 +162,11 @@ function BookPage({ activeUser }) {
         }
     }
 
-    async function preperForBookEdit(id) {
+    async function preperForBookEdit(id, notModal) {
         setLoading(true);
         const response = await ApiDataService.getDataById(ApiDataService.types.BOOK, id);
         setLoading(false);
-        if (response.error) {
+        if (response.error && !notModal) {
             setShowEditError(true);
         }
         else {
@@ -177,14 +181,29 @@ function BookPage({ activeUser }) {
             setPublishYear(bookToEdit.publishYear);
             setMmsid(bookToEdit.mmsid);
             setIsInPrivateCollection(bookToEdit.isInPrivateCollection == 1 ? true : false);
+            setSongs(bookToEdit.songs);
             setBookForEdit(id);
-            setShowModalEditBook(true);
+            if (!notModal) {
+                setShowModalEditBook(true);
+            }
+            return bookToEdit;
         }
     }
 
     function preperFotBookDelete(id) {
         setBookForDel(id);
         setShowModalRemoveBook(true);
+    }
+
+    async function deleteSong(songId, bookId) {
+        console.log("Delete song id=" + songId + "for book id=" + bookId);
+        debugger
+        const bookToEdit = await preperForBookEdit(bookId, true);
+        const songToDeleteIndex = bookToEdit.songs.findIndex(s => s.song.id == songId);
+        setSongs(bookToEdit.songs.slice(0, songToDeleteIndex).concat(bookToEdit.songs.slice(songToDeleteIndex + 1, bookToEdit.songs.length)));
+        setShowModalRemoveBookSong(true);
+        // setBooks(books => books.slice(0, bookToDeleteIndex).concat(books.slice(bookToDeleteIndex + 1, books.length)));
+        //editSong();
     }
 
     function handleClose(operation) {
@@ -205,6 +224,7 @@ function BookPage({ activeUser }) {
             case operations.UPDATE:
                 setShowModalEditBook(false);
                 setShowEditError(false);
+                setShowModalRemoveBookSong(false);
                 setBookForEdit(undefined);
                 setTitle("");
                 setSubTitle("");
@@ -215,6 +235,7 @@ function BookPage({ activeUser }) {
                 setPublishYear("");
                 setMmsid("");
                 setIsInPrivateCollection(false);
+                setSongs([]);
                 break;
             case operations.DELETE:
                 setShowModalRemoveBook(false);
@@ -425,6 +446,24 @@ function BookPage({ activeUser }) {
                             כן
                         </Button>
                         <Button variant="primary" onClick={() => handleClose(operations.DELETE)}>
+                            לא
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showModalRemoveBookSong} onHide={() => handleClose(operations.UPDATE)} backdrop="static" keyboard={false}>
+                    <Modal.Header>
+                        <Modal.Title>מחיקת שיר לספר</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {showRemoveBookSongError ? <Alert variant="danger">שגיאה בהסרה!</Alert> : null}
+                        האם פעולת מחיקת השיר לספר רצויה?
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={editBook}>
+                            כן
+                        </Button>
+                        <Button variant="primary" onClick={() => handleClose(operations.UPDATE)}>
                             לא
                         </Button>
                     </Modal.Footer>

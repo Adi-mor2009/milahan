@@ -13,12 +13,10 @@ async function getData(type, pageNum, pageSize, filter) {
     const filterUrlPart = filter ? "name=" + filter +"&pageSize=" + pageSize: "";
     const pageUrlPart = (filter && pageNum) ? "&pageNo=" + (pageNum - 1) : pageNum ? "pageNo=" + (pageNum - 1) : "";
     //const getURL = SERVER_URL + type + "?pageNo=" + (pageNum - 1);
-    debugger
     const getURL = SERVER_URL + type + dynamicUrlPart + filterUrlPart + pageUrlPart;
     console.log(getURL);
     try {
         const res = await axios.get(getURL);
-        debugger
         return({response: res, error: null});
     } catch (err) {
         console.error('Error while geting ' + type, err);
