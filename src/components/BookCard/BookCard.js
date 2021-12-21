@@ -8,7 +8,7 @@ import './BookCard.css';
 import image from '../../asserts/book.png';
 import ContextAwareToggle from "../ContextAwareToggle/ContexAwareToggle";
 
-function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete }) {
+function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete, onSongAdd }) {
     const bookSongs = book.songs.map(
         (songItem) =>
             <div>
@@ -77,6 +77,7 @@ function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete }) {
                                             >
                                                 <span style={{ fontWeight: 'bold' }}> שירים: </span>
                                             </ContextAwareToggle>
+                                            <Button variant="light" onClick={() => onSongAdd(book.id)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i></Button>
                                         </Accordion.Toggle>
                                         <Accordion.Collapse eventKey={"songMainList"}>
                                             <Card.Body>

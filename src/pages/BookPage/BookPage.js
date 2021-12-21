@@ -62,7 +62,7 @@ function BookPage({ activeUser }) {
         editable = true;
     }
 
-    const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit} onSongDelete={deleteSong}></BookCard>) : [];
+    const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit} onSongDelete={deleteSong} onSongAdd={addSong}></BookCard>) : [];
 
     function handleBookSearchChange(newSearchText) {
         setSearchBookText(newSearchText);
@@ -204,6 +204,10 @@ function BookPage({ activeUser }) {
         setShowModalRemoveBookSong(true);
         // setBooks(books => books.slice(0, bookToDeleteIndex).concat(books.slice(bookToDeleteIndex + 1, books.length)));
         //editSong();
+    }
+
+    function addSong(bookId) {
+        console.log("Book " + bookId + " going to add a new song");
     }
 
     function handleClose(operation) {

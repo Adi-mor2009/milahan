@@ -7,7 +7,7 @@ import ContextAwareToggle from "../ContextAwareToggle/ContexAwareToggle";
 // import image from '../../asserts/colorNote.png';
 // import image from '../../asserts/iStock-185090272.jpg';
 
-function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete }) {
+function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd}) {
     const songBooks = song.books.map(
         (bookItem) =>
             <div>
@@ -43,7 +43,7 @@ function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete }) {
                     {book.publisher && <Card.Text>הוצאה לאור: {book.publisher}</Card.Text>}
                     {book.publishPlace && <Card.Text>מקום הוצאה לאור: {book.publishPlace}</Card.Text>}
                     {book.publishYear && <Card.Text>שנת הוצאה לאור: {book.publishYear}</Card.Text>}
-                    {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה ({book.mmsid})</Card.Text></Card.Link>}
+                    {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה </Card.Text></Card.Link>}
                     {isEditable && <Card.Text> {book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
                     {isEditable && <Card.Text>{book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
                 </Card.Body>
@@ -87,6 +87,7 @@ function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete }) {
                                             >
                                                 <span style={{ fontWeight: 'bold' }}> ספרים: </span>
                                             </ContextAwareToggle>
+                                            <Button variant="light" onClick={() => onBookAdd(song.id)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i></Button>
                                         </Accordion.Toggle>
                                         <Accordion.Collapse eventKey={"bookMainList"}>
                                             <Card.Body>
