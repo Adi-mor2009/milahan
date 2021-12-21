@@ -1,5 +1,6 @@
 import './App.css';
 import { HashRouter, Route, Switch } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import HomePage from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import AboutPage from './pages/AboutPage/AboutPage';
@@ -48,7 +49,7 @@ function App() {
       <MainNavbar activeUser={activeUser} onLogout={handleLogout}/>
       <HashRouter>
         <Switch>
-          <Route exact path="/" >
+          <Route exact path="/">
             <HomePage activeUser={activeUser}/>
           </Route>
           <Route exact path="/book"><BookPage activeUser={activeUser}/></Route>

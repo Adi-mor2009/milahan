@@ -119,6 +119,18 @@ function HomePage({ activeUser }) {
         setSongResults([]);
     }
 
+    async function getAfterAction() {
+        //should do setSongs inorder to render
+        setLoading(true);
+        const response = (await ApiDataService.getData(ApiDataService.types.SONG, page, undefined)).response;
+        setLoading(false);
+        if (response) {
+            const data = response.data.content;
+            setTotalPages(response.data.totalPages);
+            setSongs(data.map((plainSong) => new SongModel(plainSong)));
+        }
+    }
+
     async function addSong() {
         // validation code is missing here...
         debugger
@@ -131,6 +143,7 @@ function HomePage({ activeUser }) {
             setShowModalNewSong(false);
             // inorder to render it we should do setSongs appending new song setSongs(data.map((plainSong) => new SongModel(plainSong)));
             //jump to last page setPage(totalPages)
+            getAfterAction();
         }
         else {
             if (response.error) {
@@ -156,6 +169,8 @@ function HomePage({ activeUser }) {
         }
         else {
             setShowModalRemoveSong(false);
+            //should do setSongs inorder to render
+            getAfterAction();
         }
     }
 
@@ -171,6 +186,7 @@ function HomePage({ activeUser }) {
         else {
             handleClose(operations.UPDATE);
             //should do setSongs inorder to render
+            getAfterAction();
         }
     }
 
@@ -316,7 +332,7 @@ function HomePage({ activeUser }) {
                     filterText={searchSongText}
                     filterTextChange={(text) => songResults(text)}
                 /> */}
-                {!loading && <div className="new-song">
+                {!loading && editable && <div className="new-song">
                     <Button variant="link" onClick={() => setShowModalNewSong(true)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i> הוספת שיר חדש </Button>
                 </div>}
                 <Modal show={showModalNewSong} onHide={() => handleClose(operations.CREATE)} backdrop="static" keyboard={false}>
@@ -435,7 +451,7 @@ function HomePage({ activeUser }) {
                         </Button>
                     </Modal.Footer>
                 </Modal>
-                
+
 
                 <Modal show={showModalEditSong} onHide={() => handleClose(operations.UPDATE)} backdrop="static" keyboard={false}>
                     <Modal.Header>

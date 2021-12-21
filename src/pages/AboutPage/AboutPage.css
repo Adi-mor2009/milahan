@@ -1,5 +1,12 @@
+.p-about-bg-img {
+    background-image: url('../../asserts/vector-headphone-with-artwork_z1PhUec__SB_PM.jpg');
+    min-height: 100vh;
+    background-position: top+56vh left;
+    background-repeat: no-repeat;
+}
 .about-title {
-   color: rgb(154, 54, 47);
+   /* color: rgb(154, 54, 47); */
+   color: black;/*rgb(245, 130, 31);*/
    margin-top: 50px;
 }
 
@@ -14,4 +21,13 @@
     background-repeat: no-repeat;
     background-size: cover;
     min-height: 100vh;
+}
+
+@media (min-width: 992px) {
+    .p-about-bg-img {
+        background-image: url('../../asserts/vector-headphone-with-artwork_z1PhUec__SB_PM.jpg');
+        min-height: 100vh;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
 }

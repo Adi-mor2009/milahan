@@ -1,7 +1,7 @@
 import { Button, Card, Col, Row } from "react-bootstrap";
 import './SubjectCard.css';
-//import image from '../../asserts/iStock-185090272.jpg';
-import image from '../../asserts/istockphoto-692758856-1024x1024.jpg';
+//import image from '../../asserts/iStock-185090272.jpg';subject.jpeg
+import image from '../../asserts/subject.jpeg';
 
 function SubjectCard({ subject, isEditable, onEdit, onDelete }) {
 

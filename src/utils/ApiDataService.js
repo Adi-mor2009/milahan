@@ -50,6 +50,7 @@ async function putData(type, id, data) {
     const putURL = SERVER_URL + type + "/" + id;
     try {
         const res = await axios.put(putURL, data);
+        debugger
         return({response: res, error: null});
     } catch (err) {
         console.error('Error while editing ' + type + " " + id, err);

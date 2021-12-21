@@ -6,17 +6,18 @@ function MainNavbar({ activeUser, onLogout }) {
     debugger
     return (
         <Navbar bg="light" expand="lg" className="c-navbar">
-            <Navbar.Brand href="#/"><i className="bi bi-house-fill"></i> מילחן</Navbar.Brand>
+            <Navbar.Brand href="#/about"><i className="bi bi-house-fill"></i> מילחן</Navbar.Brand>
             {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="ms-auto">
                     {/* <Nav.Link href="#/book">ספרים</Nav.Link> */}
+                    <Nav.Link href="#/">שירים</Nav.Link>
                     <Nav.Link href="#/book">ספרים</Nav.Link>
-                    {activeUser &&  activeUser.role==0 ? <Nav.Link href="#/subject">נושאים</Nav.Link> : null}
-                    <Nav.Link href="#/about">אודות</Nav.Link>
+                    {activeUser && activeUser.role == 0 ? <Nav.Link href="#/subject">נושאים</Nav.Link> : null}
+                    {/* <Nav.Link href="#/about">אודות</Nav.Link> */}
                     {/* {activeUser &&  activeUser.role==0 ? <Nav.Link href="#/edit">עריכה</Nav.Link> : null} */}
                     <Nav.Link href="#/contact">יצירת קשר</Nav.Link>
-                    <Nav.Link className="lib-haifa-link" href="https://lib.haifa.ac.il/" target="_blank"></Nav.Link>
+                    {/* <Nav.Link className="lib-haifa-link" href="https://lib.haifa.ac.il/" target="_blank"></Nav.Link> */}
                 </Nav>
                 <Nav className="me-auto">
                     {!activeUser ? <Nav.Link href="#/login"><span style={{ color: "blue", fontWeight: "bold" }}>התחברות</span></Nav.Link> : null}

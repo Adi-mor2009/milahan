@@ -3,7 +3,9 @@ import './BookCard.css';
 //import image from '../../asserts/songBookCardImg.png';
 //import image from '../../asserts/istockphoto-450576849-1024x1024.jpg';
 //import image from '../../asserts/istockphoto-457231929-1024x1024.jpg';
-import image from '../../asserts/iStock-1146829288.jpeg';
+//iStock-1146829288.png'
+//iStock-1146829288.jpeg'
+import image from '../../asserts/book.png';
 import ContextAwareToggle from "../ContextAwareToggle/ContexAwareToggle";
 
 function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete }) {
@@ -63,7 +65,7 @@ function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete }) {
                             {book.publisher && <Card.Text>הוצאה לאור: {book.publisher}</Card.Text>}
                             {book.publishPlace && <Card.Text>מקום הוצאה לאור: {book.publishPlace}</Card.Text>}
                             {book.publishYear && <Card.Text>שנת הוצאה לאור: {book.publishYear}</Card.Text>}
-                            {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה ({book.mmsid})</Card.Text></Card.Link>}
+                            {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה </Card.Text></Card.Link>}
                             {isEditable && <Card.Text> {book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
                             {isEditable && <Card.Text>{book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
                             {book.songs && book.songs.length > 0 && <div>

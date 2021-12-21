@@ -9,16 +9,19 @@ function ContactPage() {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
 
-    function handleSubmit(e) {
-        console.log("hello");
-        setMessage("");
-    }
+    // function handleSubmit(e) {
+    //     "mailto:ajacobsmo@univ.haifa.ac.il&subject=" + "פניה מאתר מילחן מ-" + email +"&body=" + message;
+    //     console.log("hello");
+    //     setMessage("");
+    // }
 
+    //action="mailto:shapira@univ.haifa.ac.il" method="get" enctype="text/plain"
     return (
         <Container fluid className="p-contact">
             <div className="p-contact-bg-img">
                 <div className="p-contact-form">
-                    <Form onSubmit={handleSubmit} method="POST">
+                    {/* <Form action="mailto:ajacobsmo@univ.haifa.ac.il" method="POST" enctype="text/plain"> */}
+                    <Form onSubmit={e => "mailto:ajacobsmo@univ.haifa.ac.il&subject=" + "פניה מאתר מילחן מ-" + email +"&body=" + message} method="POST">
 
                         <Form.Group className="mb-3" controlId="formBasicname">
                             <Form.Label>שם</Form.Label>

@@ -62,7 +62,7 @@ function BookPage({ activeUser }) {
         editable = true;
     }
 
-    const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit}  onSongDelete={deleteSong}></BookCard>) : [];
+    const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit} onSongDelete={deleteSong}></BookCard>) : [];
 
     function handleBookSearchChange(newSearchText) {
         setSearchBookText(newSearchText);
@@ -87,25 +87,22 @@ function BookPage({ activeUser }) {
         }
     }
 
-    // function addBook(resultIndex) {
-    //     //Get more info of actor
-    //     // const bookId = bookResults[resultIndex].id;
-    //     // const getURL = "https://api.themoviedb.org/3/movie/" + bookId + "?api_key=c87aac96194f8ffb8edc34a066fa92de&language=en-US";
-    //     // axios.get(getURL).then(response => {
-    //     //     const bookToAdd = response.data;
-    //     //     // Adding the movie to the view
-    //     //     setBooks(books.concat(new BookModel(bookToAdd.title, bookToAdd.runtime, "bla bla", bookToAdd.vote_average, bookToAdd.overview, "https://image.tmdb.org/t/p/w500" + bookToAdd.poster_path, bookToAdd.homepage)));
-
-    //     //     // Cleaning up the SearchBox
-    //     //     setBookResults([]);
-    //     //     setSearchBookText("");
-    //     // });
-    // }
+    async function getAfterAction() {
+        //should do setBooks inorder to render
+        setLoading(true);
+        const response = (await ApiDataService.getData(ApiDataService.types.BOOK, page, undefined)).response;
+        setLoading(false);
+        if (response) {
+            const data = response.data.content;
+            setTotalPages(response.data.totalPages);
+            setBooks(data.map((plainBook) => new BookModel(plainBook)));
+        }
+    }
 
     async function addBook() {
         // validation code is missing here...
         debugger
-        const data = { title: title, subTitle: subTitle, author: author, series: series, publisher: publisher, publishPlace: publishPlace, publishYear: publishYear, mmsid: mmsid, isInPrivateCollection: isInPrivateCollection ? 1 : 0};
+        const data = { title: title, subTitle: subTitle, author: author, series: series, publisher: publisher, publishPlace: publishPlace, publishYear: publishYear, mmsid: mmsid, isInPrivateCollection: isInPrivateCollection ? 1 : 0 };
         debugger
         setLoading(true);
         const response = await ApiDataService.postData(ApiDataService.types.BOOK, data);
@@ -115,6 +112,7 @@ function BookPage({ activeUser }) {
             setShowModalNewBook(false);
             // inorder to render it we should do setBooks appending new book setBooks(data.map((plainBook) => new BookModel(plainBook)));
             //jump to last page setPage(totalPages)
+            getAfterAction();
         }
         else {
             if (response.error) {
@@ -144,6 +142,7 @@ function BookPage({ activeUser }) {
         }
         else {
             setShowModalRemoveBook(false);
+            getAfterAction();
         }
     }
 
@@ -159,6 +158,7 @@ function BookPage({ activeUser }) {
         else {
             handleClose(operations.UPDATE);
             //should do setBooks inorder to render
+            getAfterAction();
         }
     }
 
@@ -298,7 +298,7 @@ function BookPage({ activeUser }) {
                     filterText={searchBookText}
                     filterTextChange={(text) => bookResults(text)}
                 /> */}
-                {!loading && <div className="new-book">
+                {!loading && editable && <div className="new-book">
                     <Button variant="link" onClick={() => setShowModalNewBook(true)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i> הוספת ספר חדש </Button>
                 </div>}
                 <Modal show={showModalNewBook} onHide={() => handleClose(operations.CREATE)} backdrop="static" keyboard={false}>
