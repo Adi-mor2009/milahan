@@ -36,6 +36,7 @@ function BookPage({ activeUser }) {
     const [totalPages, setTotalPages] = useState(1);
     const [boundaryRange, setBoundaryRange] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [globalError, setGlobalError] = useState(false);
     let editable = false;
 
     const operations = {
@@ -64,27 +65,39 @@ function BookPage({ activeUser }) {
 
     const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit} onSongDelete={deleteSong} onSongAdd={addSong}></BookCard>) : [];
 
-    function handleBookSearchChange(newSearchText) {
+    async function handleBookSearchChange(newSearchText) {
         setSearchBookText(newSearchText);
 
-        if (newSearchText) {
-            //Here we should call the spring backend
-            // const getURL = "http://localhost:8080/books?pageNo=" + page;
-            // axios.get(getURL).then(respose => {
-            //     console.log(respose.data);
-            //     const data = respose.data.content;
-            //     setTotalPages(respose.data.totalPages);
-            //     debugger
-            //     setBooks(data.map((plainBook) => new BookModel(plainBook)));
-            // // Here we should call TMDB
-            // const searchURL = "https://api.themoviedb.org/3/search/movie?api_key=c87aac96194f8ffb8edc34a066fa92de&query=" + newSearchText;
-            // axios.get(searchURL).then(response => {
-            //     setBookResults(response.data.results);
-            // });
-            // });
+        if (newSearchText && newSearchText.length > 3) {
+            setLoading(true);
+            const response = await ApiDataService.getData(ApiDataService.types.BOOK, undefined, 5000, newSearchText);
+            setLoading(false);
+            if (response.error) {
+                setGlobalError(true);
+            }
+            else {
+                if (response.response) {
+                    const data = response.response.data.content;
+                    setBookResults(data);
+                }
+            }
         } else {
             setBookResults([]);
         }
+    }
+
+    function handleBookCheckBySearch(result) {
+        debugger
+        setSearchBookText("");
+        setBooks(bookResults.filter((plainBook, index) => index == result).map((plainBook) => new BookModel(plainBook)));
+        setBookResults([]);
+    }
+
+    function handleSearchEnter() {
+        debugger
+        setSearchBookText("");
+        setBooks(bookResults.map((plainBook) => new BookModel(plainBook)));
+        setBookResults([]);
     }
 
     async function getAfterAction() {
@@ -202,6 +215,7 @@ function BookPage({ activeUser }) {
         const songToDeleteIndex = bookToEdit.songs.findIndex(s => s.song.id == songId);
         setSongs(bookToEdit.songs.slice(0, songToDeleteIndex).concat(bookToEdit.songs.slice(songToDeleteIndex + 1, bookToEdit.songs.length)));
         setShowModalRemoveBookSong(true);
+        getAfterAction();
         // setBooks(books => books.slice(0, bookToDeleteIndex).concat(books.slice(bookToDeleteIndex + 1, books.length)));
         //editSong();
     }
@@ -293,8 +307,9 @@ function BookPage({ activeUser }) {
                     placeholder="חיפוש ספר ..."
                     searchText={searchBookText}
                     onSearchChange={handleBookSearchChange}
+                    onEnter={handleSearchEnter}
                     results={bookResults.map(result => result.title)}
-                    onResultSelected={addBook} />
+                    onResultSelected={handleBookCheckBySearch} />
                 {/* <Filter
                     icon={<i className="bi bi-music-note"></i>}
                     // <i className="bi bi-funnel-fill"></i><i className="bi bi-search"></i>

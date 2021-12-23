@@ -9,6 +9,7 @@ import { Pagination } from 'semantic-ui-react';
 import './HomePage.css';
 import ApiDataService from '../../utils/ApiDataService';
 import SubjectModel from '../../model/SubjectModel';
+import BookModel from '../../model/BookModel';
 
 function HomePage({ activeUser }) {
     const [songs, setSongs] = useState();
@@ -18,16 +19,22 @@ function HomePage({ activeUser }) {
     const [showModalEditSong, setShowModalEditSong] = useState(false);
     const [showModalRemoveSong, setShowModalRemoveSong] = useState(false);
     const [showModalRemoveSongBook, setShowModalRemoveSongBook] = useState(false);
+    const [showModalAddSongBook, setShowModalAddSongBook] = useState(false);
     const [showSignupError, setShowSignupError] = useState(false)
     const [showRemoveError, setShowRemoveError] = useState(false);
     const [showEditError, setShowEditError] = useState(false);
     const [showRemoveSongBookError, setShowRemoveSongBookError] = useState(false);
+    const [showAddSongBookError, setShowAddSongBookError] = useState(false);
     const [title, setTitle] = useState("");
     const [lyrics, setLyrics] = useState("");
     const [composer, setComposer] = useState("");
     const [firstWords, setFirstWords] = useState(undefined);
     const [subjectMultiSelectValues, setSubjectMultiSelectValues] = useState([]);
     const [subjectsValues, setSubjectsValues] = useState([]); //All subjects
+    const [allBooks, setAllBooks] = useState([]);
+    const allBooksNames = allBooks.map((book, index) => (
+        { key: book.id, text: book.title, value: book.id }
+    ));
     const subjectsValuesNames = subjectsValues.map((option, index) => (
         { key: option.id, text: option.name, value: option.id }
     ));
@@ -35,6 +42,10 @@ function HomePage({ activeUser }) {
         option.id
     ));
     const [books, setBooks] = useState([]);
+    const [bookToBeDeleted, setBookToBeDeleted] = useState();
+    const [bookPage, setBookPage] = useState();
+    const [bookToBeAdded, setBookToBeAdded] = useState();
+    const [songToBeAdded, setSongToBeAdded] = useState();
     const [songForDel, setSongForDel] = useState(undefined);
     const [songForEdit, setSongForEdit] = useState(undefined);
     const [page, setPage] = useState(1);
@@ -75,6 +86,15 @@ function HomePage({ activeUser }) {
                 debugger
                 setSubjectsValues(data.map((plainSubject) => new SubjectModel(plainSubject)));
             }
+
+            // setLoading(true);
+            // const allBookResponse = (await ApiDataService.getData(ApiDataService.types.BOOK, undefined, 5000)).response;
+            // setLoading(false);
+            // if (allBookResponse) {
+            //     const data = allBookResponse.data.content;
+            //     debugger
+            //     setAllBooks(data.map((plainBook) => new BookModel(plainBook)));
+            // }
         })()
     }, [])
 
@@ -87,7 +107,7 @@ function HomePage({ activeUser }) {
     async function handleSongSearchChange(newSearchText) {
         setSearchSongText(newSearchText);
 
-        if (newSearchText) {
+        if (newSearchText && newSearchText.length > 3) {
             setLoading(true);
             const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 5000, newSearchText);
             setLoading(false);
@@ -190,11 +210,26 @@ function HomePage({ activeUser }) {
         }
     }
 
-    async function preperForSongEdit(id, notModal) {
+    async function removeSongBook() {
+        console.log("song to be deleted " + bookToBeDeleted)
+        setLoading(true);
+        const songBookToRemove = await ApiDataService.deleteData(ApiDataService.types.SONG_BOOK, bookToBeDeleted);
+        setLoading(false);
+        if (songBookToRemove.error) {
+            setShowRemoveSongBookError(true);
+        }
+        else {
+            setShowModalRemoveSongBook(false);
+            //should do setSongs inorder to render
+            getAfterAction();
+        }
+    }
+
+    async function preperForSongEdit(id) {
         setLoading(true);
         const response = await ApiDataService.getDataById(ApiDataService.types.SONG, id, undefined);
         setLoading(false);
-        if (response.error && !notModal) {
+        if (response.error) {
             setShowEditError(true);
         }
         else {
@@ -207,9 +242,7 @@ function HomePage({ activeUser }) {
             setSubjectMultiSelectValues(songToEdit.subjects);
             setBooks(songToEdit.books);
             setSongForEdit(id);
-            if (!notModal) {
-                setShowModalEditSong(true);
-            }
+            setShowModalEditSong(true);
             return songToEdit;
         }
     }
@@ -219,19 +252,65 @@ function HomePage({ activeUser }) {
         setShowModalRemoveSong(true);
     }
 
-    async function deleteBook(songId, bookId) {
-        console.log("Delete book id=" + bookId + "for song id=" + songId);
+    function handleBookSelect(props, data) {
         debugger
-        const songToEdit = await preperForSongEdit(songId, true);
-        const bookToDeleteIndex = songToEdit.books.findIndex(b => b.book.id == bookId);
-        setBooks(songToEdit.books.slice(0, bookToDeleteIndex).concat(songToEdit.books.slice(bookToDeleteIndex + 1, songToEdit.books.length)));
-        setShowModalRemoveSongBook(true);
-        // setBooks(books => books.slice(0, bookToDeleteIndex).concat(books.slice(bookToDeleteIndex + 1, books.length)));
-        //editSong();
+        console.log(props);
+        console.log(data);
+        setBookToBeAdded(data.value);
     }
 
-    function addBook(songId) {
+    async function addSongBook() {
+        const bookIndex = allBooks.findIndex(b => b.id == bookToBeAdded);
+        const bookToAddObj = allBooks[bookIndex];
+        const songIndex = songs.findIndex(s => s.id == songToBeAdded);
+        const songToAddObj = songs[songIndex];
+        //const songBook = new SongsBooksModel(songToAddObj, bookToAddObj, bookPage);
+        debugger
+        const data = { song: { id: songToAddObj.id }, book: { id: bookToAddObj.id }, page: bookPage };
+        setLoading(true);
+        const response = await ApiDataService.postData(ApiDataService.types.SONG_BOOK, data);
+        setLoading(false);
+        if (response.response) {
+            const data = response.response.data;
+            setShowModalAddSongBook(false);
+            // inorder to render it we should do setSongs appending new song setSongs(data.map((plainSong) => new SongModel(plainSong)));
+            //jump to last page setPage(totalPages)
+            getAfterAction();
+        }
+        else {
+            if (response.error) {
+                setShowAddSongBookError(true);
+            }
+        }
+        // Cleaning up
+        setBookToBeAdded();
+        setSongToBeAdded();
+        setBookPage();
+    }
+
+    async function deleteBook(songBookId) {
+        console.log("Delete song book id=" + songBookId);
+        debugger
+        setBookToBeDeleted(songBookId);
+        setShowModalRemoveSongBook(true);
+        // const songToEdit = await preperForSongEdit(songId, true);
+        // debugger
+        // const bookToDeleteIndex = songToEdit.books.findIndex(b => b.id == bookId);
+        // setBooks(songToEdit.books.slice(0, bookToDeleteIndex).concat(songToEdit.books.slice(bookToDeleteIndex + 1, songToEdit.books.length)));
+    }
+
+    async function addBook(songId) {
         console.log("Song " + songId + " going to add a new book");
+        setSongToBeAdded(songId);
+        setLoading(true);
+        const allBookResponse = (await ApiDataService.getData(ApiDataService.types.BOOK, undefined, 5000)).response;
+        setLoading(false);
+        if (allBookResponse) {
+            const data = allBookResponse.data.content;
+            debugger
+            setAllBooks(data.map((plainBook) => new BookModel(plainBook)));
+        }
+        setShowModalAddSongBook(true);
     }
 
     function handleClose(operation) {
@@ -244,6 +323,11 @@ function HomePage({ activeUser }) {
                 setComposer("");
                 setFirstWords("");
                 setSubjectMultiSelectValues([]);
+                setBookToBeAdded();
+                setSongToBeAdded();
+                setBookPage();
+                setShowModalAddSongBook(false);
+                setShowAddSongBookError(false);
                 break;
             case operations.UPDATE:
                 setShowModalEditSong(false);
@@ -261,6 +345,9 @@ function HomePage({ activeUser }) {
                 setShowModalRemoveSong(false);
                 setShowRemoveError(false);
                 setSongForDel(undefined);
+                setShowModalRemoveSongBook(false);
+                setShowRemoveSongBookError(false);
+                setBookToBeDeleted(undefined);
                 break;
         }
     }
@@ -438,7 +525,7 @@ function HomePage({ activeUser }) {
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show={showModalRemoveSongBook} onHide={() => handleClose(operations.UPDATE)} backdrop="static" keyboard={false}>
+                <Modal show={showModalRemoveSongBook} onHide={() => handleClose(operations.DELETE)} backdrop="static" keyboard={false}>
                     <Modal.Header>
                         <Modal.Title>מחיקת ספר לשיר</Modal.Title>
                     </Modal.Header>
@@ -447,11 +534,48 @@ function HomePage({ activeUser }) {
                         האם פעולת מחיקת הספר לשיר רצויה?
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={editSong}>
+                        <Button variant="secondary" onClick={removeSongBook}>
                             כן
                         </Button>
-                        <Button variant="primary" onClick={() => handleClose(operations.UPDATE)}>
+                        <Button variant="primary" onClick={() => handleClose(operations.DELETE)}>
                             לא
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showModalAddSongBook} onHide={() => handleClose(operations.CREATE)} backdrop="static" keyboard={false}>
+                    <Modal.Header>
+                        <Modal.Title>הוספת ספר לשיר</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {showAddSongBookError ? <Alert variant="danger">שגיאה בהוספה!</Alert> : null}
+                        <Form>
+                            <Form.Group as={Col} controlId="bookSearchSelectField">
+                                <Form.Label>בחירת ספר להוספה</Form.Label>
+                                <Dropdown
+                                    placeholder='בחירת ספר'
+                                    fluid
+                                    search
+                                    selection
+                                    options={allBooksNames}
+                                    onChange={(props, data) => { handleBookSelect(props, data) }} />
+                            </Form.Group>
+
+                            <Form.Group controlId="formBasicPage">
+                                <Form.Label>עמוד</Form.Label>
+                                <InputGroup className="mb-3">
+                                    <Form.Control type="number" placeholder="הכנסת מספר עמוד"
+                                        value={bookPage} onChange={e => setBookPage(e.target.value)} />
+                                </InputGroup>
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => handleClose(operations.CREATE)}>
+                            סגירה
+                        </Button>
+                        <Button variant="primary" onClick={addSongBook}>
+                            שמירה
                         </Button>
                     </Modal.Footer>
                 </Modal>

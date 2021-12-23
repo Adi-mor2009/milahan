@@ -16,7 +16,8 @@ function MainNavbar({ activeUser, onLogout }) {
                     {activeUser && activeUser.role == 0 ? <Nav.Link href="#/subject">נושאים</Nav.Link> : null}
                     {/* <Nav.Link href="#/about">אודות</Nav.Link> */}
                     {/* {activeUser &&  activeUser.role==0 ? <Nav.Link href="#/edit">עריכה</Nav.Link> : null} */}
-                    <Nav.Link href="#/contact">יצירת קשר</Nav.Link>
+                    {/* <Nav.Link href="#/contact">יצירת קשר</Nav.Link> */}
+                    <Nav.Link href="mailto:shapira@univ.haifa.ac.il">יצירת קשר</Nav.Link>
                     {/* <Nav.Link className="lib-haifa-link" href="https://lib.haifa.ac.il/" target="_blank"></Nav.Link> */}
                 </Nav>
                 <Nav className="me-auto">

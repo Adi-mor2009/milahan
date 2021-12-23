@@ -30,7 +30,7 @@ function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd}
                 <ContextAwareToggle as={Button} style={{color: 'black'}} variant="link" eventKey={index.toString()}
                 // style={currentActiveKey === index.toString() ? { backgroundColor: "lightskyblue" } : null}
                 >
-                    <Button variant="light" onClick={() => onBookDelete(song.id, book.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
+                    <Button variant="light" onClick={() => onBookDelete(book.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
                     <span style={{ color: 'black' }}><i class="bi bi-book"></i></span>
                     <span style={{ fontWeight: 'bold', color: 'black' }}> {book.title}</span> <span style={{ color: 'black' }}>עמוד: {book.page} </span>
                 </ContextAwareToggle>
@@ -78,6 +78,8 @@ function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd}
                             {/* <Card.Text className="listSubjects">
                                 {songSubjects}
                             </Card.Text> */}
+                            {isEditable && <Button variant="link" onClick={() => onBookAdd(song.id)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i> הוספת ספר לשיר </Button>}
+                            {/* {isEditable && <Button variant="light" onClick={() => onBookAdd(song.id)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i></Button>} */}
                             {song.books && song.books.length > 0 && <div>
                                 <Accordion key={"bookMainList"}>
                                     <Card>
@@ -87,7 +89,6 @@ function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd}
                                             >
                                                 <span style={{ fontWeight: 'bold' }}> ספרים: </span>
                                             </ContextAwareToggle>
-                                            <Button variant="light" onClick={() => onBookAdd(song.id)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i></Button>
                                         </Accordion.Toggle>
                                         <Accordion.Collapse eventKey={"bookMainList"}>
                                             <Card.Body>

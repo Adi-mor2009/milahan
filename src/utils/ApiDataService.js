@@ -4,19 +4,23 @@ const SERVER_URL = "http://localhost:8080/";
 const types = {
     SONG: "songs",
     BOOK: "books",
-    SUBJECT: "subjects"
+    SUBJECT: "subjects",
+    SONG_BOOK: "songbook"
 }
 
 async function getData(type, pageNum, pageSize, filter) {
     //GET /cars?country=USA&sort=createDate:desc&size=100&offset=2&pageSize=5&pageNo=1
     const dynamicUrlPart = (filter || pageNum) ? "?" : "";
-    const filterUrlPart = filter ? "name=" + filter +"&pageSize=" + pageSize: "";
+    const filterUrlPart = filter ? "name=" + filter : "";
     const pageUrlPart = (filter && pageNum) ? "&pageNo=" + (pageNum - 1) : pageNum ? "pageNo=" + (pageNum - 1) : "";
+    const pageSizePart = pageSize ? (dynamicUrlPart == "?" ? "&pageSize=" + pageSize: "?pageSize=" + pageSize) : "";
+    
     //const getURL = SERVER_URL + type + "?pageNo=" + (pageNum - 1);
-    const getURL = SERVER_URL + type + dynamicUrlPart + filterUrlPart + pageUrlPart;
+    const getURL = SERVER_URL + type + dynamicUrlPart + filterUrlPart + pageUrlPart + pageSizePart;
     console.log(getURL);
     try {
         const res = await axios.get(getURL);
+        debugger
         return({response: res, error: null});
     } catch (err) {
         console.error('Error while geting ' + type, err);
@@ -38,7 +42,9 @@ async function getDataById(type, id) {
 async function postData(type, data) {
     const postURL = SERVER_URL + type;
     try {
+        debugger
         const res = await axios.post(postURL, data);
+        debugger
         return({response: res, error: null});
     } catch (err) {
         console.error('Error while creating ' + type + " with data:" + data, err);
