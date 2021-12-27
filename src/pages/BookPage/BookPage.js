@@ -1,12 +1,13 @@
 import { useState, useEffect, lazy } from 'react';
-import { Container, Form, InputGroup, Modal, Alert, Button, Spinner } from "react-bootstrap";
+import { Container, Form, InputGroup, Modal, Alert, Button, Spinner, Col } from "react-bootstrap";
 import SearchBox from "../../components/SearchBox/SearchBox";
-import Filter from "../../components/Filter/Filter";
+import { Dropdown } from 'semantic-ui-react'
 import BookCard from "../../components/BookCard/BookCard";
 import BookModel from '../../model/BookModel';
 import { Pagination } from 'semantic-ui-react';
 import './BookPage.css';
 import ApiDataService from '../../utils/ApiDataService';
+import SongModel from '../../model/SongModel';
 
 function BookPage({ activeUser }) {
     const [books, setBooks] = useState();
@@ -16,10 +17,12 @@ function BookPage({ activeUser }) {
     const [showModalEditBook, setShowModalEditBook] = useState(false);
     const [showModalRemoveBook, setShowModalRemoveBook] = useState(false);
     const [showModalRemoveBookSong, setShowModalRemoveBookSong] = useState(false);
+    const [showModalAddBookSong, setShowModalAddBookSong] = useState(false);
     const [showSignupError, setShowSignupError] = useState(false)
     const [showRemoveError, setShowRemoveError] = useState(false);
     const [showEditError, setShowEditError] = useState(false);
     const [showRemoveBookSongError, setShowRemoveBookSongError] = useState(false);
+    const [showAddBookSongError, setShowAddBookSongError] = useState(false);
     const [title, setTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
     const [author, setAuthor] = useState("");
@@ -29,7 +32,15 @@ function BookPage({ activeUser }) {
     const [publishYear, setPublishYear] = useState("");
     const [mmsid, setMmsid] = useState("");
     const [isInPrivateCollection, setIsInPrivateCollection] = useState(false);
-    const [songs, setSongs] = useState([]);
+    const [allSongs, setAllSongs] = useState([]);
+    const allSongsNames = allSongs.map((song, index) => (
+        { key: song.id, text: song.title, value: song.id }
+    ));
+    const [songs,setSongs] = useState([]);
+    const [songToBeDeleted, setSongToBeDeleted] = useState();
+    const [bookPage, setBookPage] = useState();
+    const [songToBeAdded, setSongToBeAdded] = useState();
+    const [bookToBeAdded, setBookToBeAdded] = useState();
     const [bookForDel, setBookForDel] = useState(undefined);
     const [bookForEdit, setBookForEdit] = useState(undefined);
     const [page, setPage] = useState(1);
@@ -175,11 +186,25 @@ function BookPage({ activeUser }) {
         }
     }
 
-    async function preperForBookEdit(id, notModal) {
+    async function removeBookSong() {
+        console.log("song to be deleted " + songToBeDeleted)
+        setLoading(true);
+        const bookSongToRemove = await ApiDataService.deleteData(ApiDataService.types.SONG_BOOK, songToBeDeleted);
+        setLoading(false);
+        if (bookSongToRemove.error) {
+            setShowRemoveBookSongError(true);
+        }
+        else {
+            setShowModalRemoveBookSong(false);
+            getAfterAction();
+        }
+    }
+
+    async function preperForBookEdit(id) {
         setLoading(true);
         const response = await ApiDataService.getDataById(ApiDataService.types.BOOK, id);
         setLoading(false);
-        if (response.error && !notModal) {
+        if (response.error) {
             setShowEditError(true);
         }
         else {
@@ -196,9 +221,7 @@ function BookPage({ activeUser }) {
             setIsInPrivateCollection(bookToEdit.isInPrivateCollection == 1 ? true : false);
             setSongs(bookToEdit.songs);
             setBookForEdit(id);
-            if (!notModal) {
-                setShowModalEditBook(true);
-            }
+            setShowModalEditBook(true);
             return bookToEdit;
         }
     }
@@ -208,20 +231,68 @@ function BookPage({ activeUser }) {
         setShowModalRemoveBook(true);
     }
 
-    async function deleteSong(songId, bookId) {
-        console.log("Delete song id=" + songId + "for book id=" + bookId);
+    function handleSongSelect(props, data) {
         debugger
-        const bookToEdit = await preperForBookEdit(bookId, true);
-        const songToDeleteIndex = bookToEdit.songs.findIndex(s => s.song.id == songId);
-        setSongs(bookToEdit.songs.slice(0, songToDeleteIndex).concat(bookToEdit.songs.slice(songToDeleteIndex + 1, bookToEdit.songs.length)));
+        console.log(props);
+        console.log(data);
+        setSongToBeAdded(data.value);
+    }
+
+    async function addBookSong() {
+        // const songIndex = allSongs.findIndex(s => s.id == songToBeAdded);
+        // const songToAddObj = allSongs[songIndex];
+        // const bookIndex = books.findIndex(b => b.id == bookToBeAdded);
+        // const bookToAddObj = books[bookIndex];
+        //const songBook = new SongsBooksModel(songToAddObj, bookToAddObj, bookPage);
+        debugger
+        const data = { song: { id: songToBeAdded }, book: { id: bookToBeAdded }, page: bookPage };
+        setLoading(true);
+        const response = await ApiDataService.postData(ApiDataService.types.SONG_BOOK, data);
+        setLoading(false);
+        if (response.response) {
+            const data = response.response.data;
+            setShowModalAddBookSong(false);
+            // inorder to render it we should do setSongs appending new song setSongs(data.map((plainSong) => new SongModel(plainSong)));
+            //jump to last page setPage(totalPages)
+            getAfterAction();
+        }
+        else {
+            if (response.error) {
+                setShowAddBookSongError(true);
+            }
+        }
+        // Cleaning up
+        setBookToBeAdded();
+        setSongToBeAdded();
+        setBookPage();
+    }
+
+    async function deleteSong(bookSongId) {
+        console.log("Delete book song id=" + bookSongId);
+        debugger
+        setSongToBeDeleted(bookSongId);
         setShowModalRemoveBookSong(true);
-        getAfterAction();
+        // const bookToEdit = await preperForBookEdit(bookId, true);
+        // const songToDeleteIndex = bookToEdit.songs.findIndex(s => s.song.id == songId);
+        // setSongs(bookToEdit.songs.slice(0, songToDeleteIndex).concat(bookToEdit.songs.slice(songToDeleteIndex + 1, bookToEdit.songs.length)));
+        // setShowModalRemoveBookSong(true);
+        // getAfterAction();
         // setBooks(books => books.slice(0, bookToDeleteIndex).concat(books.slice(bookToDeleteIndex + 1, books.length)));
         //editSong();
     }
 
-    function addSong(bookId) {
+    async function addSong(bookId) {
         console.log("Book " + bookId + " going to add a new song");
+        setBookToBeAdded(bookId);
+        setLoading(true);
+        const allSongResponse = (await ApiDataService.getData(ApiDataService.types.SONG, undefined, 50000)).response;
+        setLoading(false);
+        if (allSongResponse) {
+            const data = allSongResponse.data.content;
+            debugger
+            setAllSongs(data.map((plainSong) => new SongModel(plainSong)));
+        }
+        setShowModalAddBookSong(true);
     }
 
     function handleClose(operation) {
@@ -238,6 +309,11 @@ function BookPage({ activeUser }) {
                 setPublishYear("");
                 setMmsid("");
                 setIsInPrivateCollection(false);
+                setBookToBeAdded();
+                setSongToBeAdded();
+                setBookPage();
+                setShowModalAddBookSong(false);
+                setShowAddBookSongError(false);
                 break;
             case operations.UPDATE:
                 setShowModalEditBook(false);
@@ -259,6 +335,9 @@ function BookPage({ activeUser }) {
                 setShowModalRemoveBook(false);
                 setShowRemoveError(false);
                 setBookForDel(undefined);
+                setShowModalRemoveBookSong(false);
+                setShowRemoveBookSongError(false);
+                setSongToBeDeleted(undefined);
                 break;
         }
     }
@@ -273,11 +352,6 @@ function BookPage({ activeUser }) {
             setPage(activePage.activePage);
             setBooks(data.map((plainBook) => new BookModel(plainBook)));
         }
-    }
-
-    function setIsInPrivateCollectionTest(e) {
-        debugger
-        console.log(e.target.checked);
     }
 
     return (
@@ -470,7 +544,7 @@ function BookPage({ activeUser }) {
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show={showModalRemoveBookSong} onHide={() => handleClose(operations.UPDATE)} backdrop="static" keyboard={false}>
+                <Modal show={showModalRemoveBookSong} onHide={() => handleClose(operations.DELETE)} backdrop="static" keyboard={false}>
                     <Modal.Header>
                         <Modal.Title>מחיקת שיר לספר</Modal.Title>
                     </Modal.Header>
@@ -479,11 +553,48 @@ function BookPage({ activeUser }) {
                         האם פעולת מחיקת השיר לספר רצויה?
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={editBook}>
+                        <Button variant="secondary" onClick={removeBookSong}>
                             כן
                         </Button>
-                        <Button variant="primary" onClick={() => handleClose(operations.UPDATE)}>
+                        <Button variant="primary" onClick={() => handleClose(operations.DELETE)}>
                             לא
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showModalAddBookSong} onHide={() => handleClose(operations.CREATE)} backdrop="static" keyboard={false}>
+                    <Modal.Header>
+                        <Modal.Title>הוספת שיר לספר</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {showAddBookSongError ? <Alert variant="danger">שגיאה בהוספה!</Alert> : null}
+                        <Form>
+                            <Form.Group as={Col} controlId="bookSearchSelectField">
+                                <Form.Label>בחירת שיר להוספה</Form.Label>
+                                <Dropdown
+                                    placeholder='בחירת שיר'
+                                    fluid
+                                    search
+                                    selection
+                                    options={allSongsNames}
+                                    onChange={(props, data) => { handleSongSelect(props, data) }} />
+                            </Form.Group>
+
+                            <Form.Group controlId="formBasicPage">
+                                <Form.Label>עמוד</Form.Label>
+                                <InputGroup className="mb-3">
+                                    <Form.Control type="number" placeholder="הכנסת מספר עמוד"
+                                        value={bookPage} onChange={e => setBookPage(e.target.value)} />
+                                </InputGroup>
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => handleClose(operations.CREATE)}>
+                            סגירה
+                        </Button>
+                        <Button variant="primary" onClick={addBookSong}>
+                            שמירה
                         </Button>
                     </Modal.Footer>
                 </Modal>

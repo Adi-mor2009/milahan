@@ -22,7 +22,7 @@ function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete, onSongAdd 
                 <ContextAwareToggle as={Button} style={{ color: 'black' }} variant="link" eventKey={index.toString()}
                 // style={currentActiveKey === index.toString() ? { backgroundColor: "lightskyblue" } : null}
                 >
-                    <Button variant="light" onClick={() => onSongDelete(song.id, book.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
+                    <Button variant="light" onClick={() => onSongDelete(song.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
                     <span style={{ color: 'black' }}><i class="bi bi-music-note-list"></i></span>
                     <span style={{ fontWeight: 'bold', color: 'black' }}> {song.title}</span> <span style={{ color: 'black' }}>עמוד: {song.page} </span>
                 </ContextAwareToggle>
@@ -68,6 +68,7 @@ function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete, onSongAdd 
                             {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה </Card.Text></Card.Link>}
                             {isEditable && <Card.Text> {book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
                             {isEditable && <Card.Text>{book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
+                            {isEditable && <Button variant="link" onClick={() => onSongAdd(book.id)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i> הוספת שיר לספר </Button>}
                             {book.songs && book.songs.length > 0 && <div>
                                 <Accordion key={"songMainList"}>
                                     <Card>
@@ -77,7 +78,6 @@ function BookCard({ book, isEditable, onEdit, onDelete, onSongDelete, onSongAdd 
                                             >
                                                 <span style={{ fontWeight: 'bold' }}> שירים: </span>
                                             </ContextAwareToggle>
-                                            <Button variant="light" onClick={() => onSongAdd(book.id)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i></Button>
                                         </Accordion.Toggle>
                                         <Accordion.Collapse eventKey={"songMainList"}>
                                             <Card.Body>
