@@ -7,7 +7,7 @@ import ContextAwareToggle from "../ContextAwareToggle/ContexAwareToggle";
 // import image from '../../asserts/colorNote.png';
 // import image from '../../asserts/iStock-185090272.jpg';
 
-function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd}) {
+function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd }) {
     const songBooks = song.books.map(
         (bookItem) =>
             <div>
@@ -15,26 +15,28 @@ function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd}
                 <span style={{ fontWeight: 'bold' }}> {bookItem.title}</span> עמוד: {bookItem.page}
             </div>
     );
-    const songSubjects = song.subjects.map(function(item) {
+    const songSubjects = song.subjects.map(function (item) {
         return item['name'];
-      });
-        // (subjectItem) =>
-        //     <div>
-        //         <i class="bi bi-dot"></i>
-        //         <span style={{ fontWeight: 'bold' }}> {subjectItem.name}</span>
-        //     </div>
+    });
+    // (subjectItem) =>
+    //     <div>
+    //         <i class="bi bi-dot"></i>
+    //         <span style={{ fontWeight: 'bold' }}> {subjectItem.name}</span>
+    //     </div>
     // );
     const accordionPart = song.books.map((book, index) => <Accordion key={index.toString()}>
         <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={index.toString()}>
-                <ContextAwareToggle as={Button} style={{color: 'black'}} variant="link" eventKey={index.toString()}
+            <Card.Header>
+                <ContextAwareToggle as={Button} style={{ color: 'black' }} variant="link" eventKey={index.toString()}
                 // style={currentActiveKey === index.toString() ? { backgroundColor: "lightskyblue" } : null}
                 >
-                    <Button variant="light" onClick={() => onBookDelete(book.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
                     <span style={{ color: 'black' }}><i class="bi bi-book"></i></span>
                     <span style={{ fontWeight: 'bold', color: 'black' }}> {book.title}</span> <span style={{ color: 'black' }}>עמוד: {book.page} </span>
                 </ContextAwareToggle>
-            </Accordion.Toggle>
+                <div className="remove-card-botton">
+                    <Button variant="light" onClick={() => onBookDelete(book.id)}><i className="bi bi-x" style={{ color: 'red' }}></i></Button>
+                </div>
+            </Card.Header>
             <Accordion.Collapse eventKey={index.toString()}>
                 <Card.Body>
                     {book.subTitle && <Card.Text>תת כותרת: {book.subTitle}</Card.Text>}
@@ -43,7 +45,7 @@ function SongCard({ song, isEditable, onEdit, onDelete, onBookDelete, onBookAdd}
                     {book.publisher && <Card.Text>הוצאה לאור: {book.publisher}</Card.Text>}
                     {book.publishPlace && <Card.Text>מקום הוצאה לאור: {book.publishPlace}</Card.Text>}
                     {book.publishYear && <Card.Text>שנת הוצאה לאור: {book.publishYear}</Card.Text>}
-                    {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid+ "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה </Card.Text></Card.Link>}
+                    {book.mmsid && <Card.Link href={"https://haifa-primo.hosted.exlibrisgroup.com/primo-explore/search?query=any,contains," + book.mmsid + "&tab=haifa_all&vid=HAU&lang=iw_IL"} target="_blank"><Card.Text>הספר בקטלוג אוניברסיטת חיפה </Card.Text></Card.Link>}
                     {isEditable && <Card.Text> {book.isInPrivateCollection && book.isInPrivateCollection == 1 ? <span>האם נמצא באוסף פרטי? כן</span> : ""}</Card.Text>}
                     {isEditable && <Card.Text>{book.isInPrivateCollection && book.isInPrivateCollection == 0 ? <span>האם נמצא באוסף פרטי? לא</span> : ""}</Card.Text>}
                 </Card.Body>

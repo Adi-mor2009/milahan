@@ -303,10 +303,10 @@ function HomePage({ activeUser }) {
         console.log("Song " + songId + " going to add a new book");
         setSongToBeAdded(songId);
         setLoading(true);
-        const allBookResponse = (await ApiDataService.getData(ApiDataService.types.BOOK, undefined, 5000)).response;
+        const allBookResponse = (await ApiDataService.getData(ApiDataService.types.BOOK_TITLE)).response;
         setLoading(false);
         if (allBookResponse) {
-            const data = allBookResponse.data.content;
+            const data = allBookResponse.data;
             debugger
             setAllBooks(data.map((plainBook) => new BookModel(plainBook)));
         }

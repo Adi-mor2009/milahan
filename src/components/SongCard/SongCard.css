@@ -22,6 +22,13 @@ div.col-md-8.c-song-info.col {
     font-weight: bold; */
 }
 
+.accordion .card-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    flex-flow: row wrap !important;
+}
+
 .song-card-bottons {
     display: inline;
 }
@@ -33,6 +40,16 @@ div.col-md-8.c-song-info.col {
 .song-book-card-bottons {
     position: relative;
     margin-left: auto;;
+}
+
+.remove-card-botton {
+    position: relative;
+    margin-left: auto;
+}
+
+.accordion .card-header .btn:focus {
+    outline: none;
+    box-shadow: none;
 }
 
 @media (min-width: 992px) {

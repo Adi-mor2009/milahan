@@ -4,6 +4,8 @@ const SERVER_URL = "http://localhost:8080/";
 const types = {
     SONG: "songs",
     BOOK: "books",
+    BOOK_TITLE: "books_title",
+    SONG_TITLE: "songs_title",
     SUBJECT: "subjects",
     SONG_BOOK: "songbook"
 }

@@ -8,8 +8,7 @@ export default class SongModel {
         this.lyrics = plainSong.lyrics;
         this.composer = plainSong.composer;
         this.firstWords = plainSong.firstWords;
-        debugger
-        this.books = plainSong.books.map((plainBook) => new SongBookModel(plainBook));
-        this.subjects = plainSong.subjects.map((plainSubject) => new SubjectModel(plainSubject));//plainSong.subjects;
+        this.books = plainSong.books ? (plainSong.books.map((plainBook) => new SongBookModel(plainBook))) : undefined;
+        this.subjects = plainSong.subjects ? (plainSong.subjects.map((plainSubject) => new SubjectModel(plainSubject))) : undefined;
     }
 }

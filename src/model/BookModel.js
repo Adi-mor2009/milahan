@@ -11,7 +11,7 @@ export default class BookModel {
         this.publishPlace = plainBook.publishPlace;
         this.publishYear = plainBook.publishYear;
         this.mmsid = plainBook.mmsid;
-        this.isInPrivateCollection = plainBook.isInPrivateCollection == 1 ? true : false;
-        this.songs = plainBook.songs.map((plainBook) => new BookSongModel(plainBook));//plainBook.songs;
+        this.isInPrivateCollection = plainBook.isInPrivateCollection ? (plainBook.isInPrivateCollection == 1 ? true : false) : undefined;
+        this.songs = plainBook.songs ? plainBook.songs.map((plainBook) => new BookSongModel(plainBook)) : undefined;//plainBook.songs;
     }
 }
