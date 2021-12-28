@@ -260,19 +260,24 @@ function HomePage({ activeUser }) {
     }
 
     async function addSongBook() {
-        const bookIndex = allBooks.findIndex(b => b.id == bookToBeAdded);
-        const bookToAddObj = allBooks[bookIndex];
-        const songIndex = songs.findIndex(s => s.id == songToBeAdded);
-        const songToAddObj = songs[songIndex];
+        // const bookIndex = allBooks.findIndex(b => b.id == bookToBeAdded);
+        // const bookToAddObj = allBooks[bookIndex];
+        // const songIndex = songs.findIndex(s => s.id == songToBeAdded);
+        // const songToAddObj = songs[songIndex];
         //const songBook = new SongsBooksModel(songToAddObj, bookToAddObj, bookPage);
+        if (!bookToBeAdded || !bookPage) {
+            setShowAddSongBookError(true);
+            return
+        }
         debugger
-        const data = { song: { id: songToAddObj.id }, book: { id: bookToAddObj.id }, page: bookPage };
+        const data = { song: { id: songToBeAdded }, book: { id: bookToBeAdded }, page: bookPage };
         setLoading(true);
         const response = await ApiDataService.postData(ApiDataService.types.SONG_BOOK, data);
         setLoading(false);
         if (response.response) {
             const data = response.response.data;
             setShowModalAddSongBook(false);
+            setShowAddSongBookError(false);
             // inorder to render it we should do setSongs appending new song setSongs(data.map((plainSong) => new SongModel(plainSong)));
             //jump to last page setPage(totalPages)
             getAfterAction();
@@ -564,8 +569,11 @@ function HomePage({ activeUser }) {
                             <Form.Group controlId="formBasicPage">
                                 <Form.Label>עמוד</Form.Label>
                                 <InputGroup className="mb-3">
-                                    <Form.Control type="number" placeholder="הכנסת מספר עמוד"
+                                    <Form.Control required type="number" placeholder="הכנסת מספר עמוד"
                                         value={bookPage} onChange={e => setBookPage(e.target.value)} />
+                                    <Form.Control.Feedback type="invalid">
+                                        בבקשה להכניס מספר עמוד
+                                    </Form.Control.Feedback>
                                 </InputGroup>
                             </Form.Group>
                         </Form>

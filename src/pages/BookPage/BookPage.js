@@ -244,7 +244,10 @@ function BookPage({ activeUser }) {
         // const bookIndex = books.findIndex(b => b.id == bookToBeAdded);
         // const bookToAddObj = books[bookIndex];
         //const songBook = new SongsBooksModel(songToAddObj, bookToAddObj, bookPage);
-        debugger
+        if (!songToBeAdded || !bookPage) {
+            setShowAddBookSongError(true);
+            return
+        }
         const data = { song: { id: songToBeAdded }, book: { id: bookToBeAdded }, page: bookPage };
         setLoading(true);
         const response = await ApiDataService.postData(ApiDataService.types.SONG_BOOK, data);
@@ -252,6 +255,7 @@ function BookPage({ activeUser }) {
         if (response.response) {
             const data = response.response.data;
             setShowModalAddBookSong(false);
+            setShowAddBookSongError(false);
             // inorder to render it we should do setSongs appending new song setSongs(data.map((plainSong) => new SongModel(plainSong)));
             //jump to last page setPage(totalPages)
             getAfterAction();
