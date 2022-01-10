@@ -1,3 +1,5 @@
+import md5 from "md5";
+
 export default class UserModel {
     #password;   // pwd is a private property
     constructor(plainUser) {
@@ -9,6 +11,6 @@ export default class UserModel {
     }
 
     login(email, password) {
-        return email.toLowerCase() === this.email.toLowerCase() && password === this.#password;
+        return email.toLowerCase() === this.email.toLowerCase() && md5(password) === this.#password;
     }
 } 
