@@ -32,6 +32,27 @@ function BookPage({ activeUser }) {
     const [publishYear, setPublishYear] = useState("");
     const [mmsid, setMmsid] = useState("");
     const [isInPrivateCollection, setIsInPrivateCollection] = useState(false);
+    const searchByValues = {
+        TITLE: 'title',
+        SUB_TITLE: 'subTitle',
+        AUTHOR: 'author',
+        SERIES: 'series',
+        PUBLISHER: 'publisher',
+        PUBLISH_PLACE: 'publishPlace',
+        PUBLISH_YEAR: 'publishYear',
+        MMSID: 'mmsid'
+    }
+    const [searchBy, setSearchBy] = useState(searchByValues.TITLE);
+    const searchByDropDwon = [
+        { key: 'title', text: '  שם הספר', value: searchByValues.TITLE, label: <i class="bi bi-book-fill"></i> },
+        { key: 'subTitle', text: '  תת כותרת', value: searchByValues.SUB_TITLE, label: <i class="bi bi-book-fill"></i> },
+        { key: 'author', text: '  מחבר', value: searchByValues.AUTHOR, label: <i className="bi bi-person-fill"></i> },
+        { key: 'series', text: '   סדרה', value: searchByValues.SERIES, label: <i class="bi bi-stack"></i> },
+        { key: 'publisher', text: '   הוצאה לאור', value: searchByValues.PUBLISHER, label: <i class="bi bi-file-earmark-ppt-fill"></i> },
+        { key: 'publishPlace', text: '   מקום הוצאה לאור', value: searchByValues.PUBLISH_PLACE, label: <i class="bi bi-geo-alt-fill"></i> }, 
+        { key: 'publishYear', text: '   שנת הוצאה לאור', value: searchByValues.PUBLISH_YEAR, label: <i class="bi bi-calendar-fill"></i> },
+        { key: 'mmsid', text: '   מספר מערכת', value: searchByValues.MMSID, label: <i class="bi bi-book-fill"></i> }
+    ]
     const [allSongs, setAllSongs] = useState([]);
     const allSongsNames = allSongs.map((song, index) => (
         { key: song.id, text: song.title, value: song.id }
@@ -74,6 +95,20 @@ function BookPage({ activeUser }) {
         editable = true;
     }
 
+    function debounce(func, timeout = 100) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
+    }
+
+    function updateResults(data) {
+        setBookResults(data);
+    }
+
+    const processChange = debounce((data) => updateResults(data));
+
     const booksCards = books !== undefined ? books.map((book, index) => <BookCard key={index.toString()} book={book} isEditable={editable} onDelete={preperFotBookDelete} onEdit={preperForBookEdit} onSongDelete={deleteSong} onSongAdd={addSong}></BookCard>) : [];
 
     async function handleBookSearchChange(newSearchText) {
@@ -81,7 +116,7 @@ function BookPage({ activeUser }) {
 
         if (newSearchText && newSearchText.length > 3) {
             setLoading(true);
-            const response = await ApiDataService.getData(ApiDataService.types.BOOK, undefined, 5000, newSearchText);
+            const response = await ApiDataService.getData(ApiDataService.types.BOOK, undefined, 5000, newSearchText, searchBy);
             setLoading(false);
             if (response.error) {
                 setGlobalError(true);
@@ -104,11 +139,34 @@ function BookPage({ activeUser }) {
         setBookResults([]);
     }
 
-    function handleSearchEnter() {
+    async function handleSearchEnter() {
         debugger
-        setSearchBookText("");
-        setBooks(bookResults.map((plainBook) => new BookModel(plainBook)));
+        if (searchBookText.length <= 3 && searchBookText.length > 0) {
+            setLoading(true);
+            const response = await ApiDataService.getData(ApiDataService.types.BOOK, undefined, 5000, searchBookText, searchBy);
+            setLoading(false);
+            if (response.error) {
+                setGlobalError(true);
+            }
+            else {
+                if (response.response) {
+                    const data = response.response.data.content;
+                    //processChange(data);
+                    setBooks(data.map((plainSong) => new BookModel(plainSong)));
+                    setTotalPages(0);
+                }
+            }
+        } else {
+            setSearchBookText("");
+            setBooks(bookResults.map((plainBook) => new BookModel(plainBook)));
+            setBookResults([]);
+        }
+    }
+
+    function handleSearchBySelect(searchBySelect) {
         setBookResults([]);
+        setSearchBy(searchBySelect.value);
+        setTotalPages(0);
     }
 
     async function getAfterAction() {
@@ -361,33 +419,16 @@ function BookPage({ activeUser }) {
     return (
         <div className="p-book">
             <Container>
-                {/* <Form>
-                        {['radio'].map((type) => (
-                            <div key={`inline-${type}`} className="mb-3">
-                                <Form.Check
-                                    inline
-                                    label="חיפוש לפי שיר"
-                                    name="group1"
-                                    type={type}
-                                    id={`inline-${type}-1`}
-                                />
-                                <Form.Check
-                                    inline
-                                    label="חיפוש לפי ספר"
-                                    name="group1"
-                                    type={type}
-                                    id={`inline-${type}-2`}
-                                />
-                            </div>
-                        ))}
-                    </Form> */}
                 <SearchBox
                     placeholder="חיפוש ספר ..."
                     searchText={searchBookText}
-                    onSearchChange={handleBookSearchChange}
+                    onSearchChange={debounce((data) => handleBookSearchChange(data))}
                     onEnter={handleSearchEnter}
                     results={bookResults.map(result => result.title)}
-                    onResultSelected={handleBookCheckBySearch} />
+                    onResultSelected={handleBookCheckBySearch} 
+                    searchBy={searchBy}
+                    searchByItems={searchByDropDwon}
+                    onSearchBySelect={handleSearchBySelect}/>
                 {/* <Filter
                     icon={<i className="bi bi-music-note"></i>}
                     // <i className="bi bi-funnel-fill"></i><i className="bi bi-search"></i>
@@ -722,7 +763,7 @@ function BookPage({ activeUser }) {
                         </Button>
                     </Modal.Footer>
                 </Modal>
-                {!loading && <Pagination className="p-2"
+                {!loading && totalPages > 0 && <Pagination className="p-2"
                     activePage={page}
                     boundaryRange={boundaryRange}
                     onPageChange={handlePaginationChange}

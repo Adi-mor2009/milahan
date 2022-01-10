@@ -1,7 +1,7 @@
 import { useState, useEffect, lazy, useRef } from 'react';
 import { Container, Form, InputGroup, Modal, Alert, Button, Spinner, Col } from "react-bootstrap";
 import SearchBox from "../../components/SearchBox/SearchBox";
-import { Dropdown } from 'semantic-ui-react'
+import { Dropdown, Header } from 'semantic-ui-react'
 import Filter from "../../components/Filter/Filter";
 import SongCard from "../../components/SongCard/SongCard";
 import SongModel from '../../model/SongModel';
@@ -38,9 +38,14 @@ function HomePage({ activeUser }) {
     const subjectsValuesNames = subjectsValues.map((option, index) => (
         { key: option.id, text: option.name, value: option.id }
     ));
+    const subjectsValuesNamesFilter = subjectsValues.map((option, index) => (
+        { key: option.name, text: option.name, value: option.name }
+    ));
+    subjectsValuesNamesFilter.unshift({ key: 'ללא פילטר', text: 'ללא פילטר', value: undefined });
     const subjectDefaultValuesToShow = subjectMultiSelectValues.map((option, index) => (
         option.id
     ));
+    const [subjectResults, setSubjectResults] = useState([]);
     const [books, setBooks] = useState([]);
     const [bookToBeDeleted, setBookToBeDeleted] = useState();
     const [bookPage, setBookPage] = useState();
@@ -53,6 +58,23 @@ function HomePage({ activeUser }) {
     const [boundaryRange, setBoundaryRange] = useState(1);
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState(false);
+    const searchByValues = {
+        TITLE: 'title',
+        LYRICS: 'lyrics',
+        COMPOSER: 'composer',
+        FIRST_WORDS: 'firstWords',
+        SUBJECTS: 'subjects'
+    }
+    const [searchBy, setSearchBy] = useState(searchByValues.TITLE);
+    const searchByDropDwon = [
+        { key: 'title', text: '  שם השיר', value: searchByValues.TITLE, label: <i class="bi bi-music-note-list"></i> },
+        { key: 'lyrics', text: '  מחבר', value: searchByValues.LYRICS, label: <i className="bi bi-person-fill"></i> },
+        { key: 'composer', text: '  מלחין', value: searchByValues.COMPOSER, label: <i className="bi bi-person-fill"></i> },
+        { key: 'firstWords', text: '  מילים ראשונות', value: searchByValues.FIRST_WORDS, label: <i class="bi bi-disc-fill"></i> },
+        { key: 'subjects', text: '   נושאים', value: searchByValues.SUBJECTS, label: <i class="bi bi-signpost-split"></i> }
+        // {key: 'FirstWords', text: '  מילים ראשונות', value: 'FirstWords', label: { color: 'purple', empty: true, circular: true }}
+    ]
+    const [filter, setFilter] = useState(undefined);
 
     let editable = false;
 
@@ -98,18 +120,71 @@ function HomePage({ activeUser }) {
         })()
     }, [])
 
+    // useEffect(() => {
+    //     debugger
+    //     f1();
+    //     // if (songResults.length > 0 && searchSongText <= 1) {
+    //     //     setSongResults([]);
+    //     // }
+    // }, [songResults])
+
     if (activeUser && activeUser.role == 0) {
         editable = true;
     }
 
+    function debounce(func, timeout = 100) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
+    }
+
+    function updateResults(data) {
+        console.log('Saving data');
+        setSongResults(data);
+    }
+
+    const processChange = debounce((data) => updateResults(data));
+
     const songsCards = songs !== undefined ? songs.map((song, index) => <SongCard key={index.toString()} song={song} isEditable={editable} onDelete={preperFotSongDelete} onEdit={preperForSongEdit} onBookDelete={deleteBook} onBookAdd={addBook}></SongCard>) : [];
+
+    function getCardsByFilter() {
+        debugger
+        return filter ? songsCards.filter((card) => card.props.song.subjects ? (card.props.song.subjects.find(subject => subject.name == filter)) : "") : songsCards;
+    }
+
+    async function getBySubject(subjectFilter) {
+        debugger
+        setFilter(subjectFilter);
+        if (subjectFilter) {
+            // const filterStr = "{name=" + subjectFilter + "}";{ id: toAddArr[j], name: name }
+            //const filterStr = "{ id: 2, name:" + subjectFilter + "}";
+            setLoading(true);
+            const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 5000, subjectFilter, searchByValues.SUBJECTS);
+            setLoading(false);
+            if (response.error) {
+                debugger
+                setGlobalError(true);
+            }
+            else {
+                if (response.response) {
+                    debugger
+                    const data = response.response.data.content;
+                    //processChange(data);
+                    setSongs(data.map((plainSong) => new SongModel(plainSong)));
+                    setTotalPages(0);
+                }
+            }
+        }
+    }
 
     async function handleSongSearchChange(newSearchText) {
         setSearchSongText(newSearchText);
 
-        if (newSearchText && newSearchText.length > 3) {
+        if (newSearchText && newSearchText.length > 3 && searchBy != searchByValues.SUBJECTS) {
             setLoading(true);
-            const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 5000, newSearchText);
+            const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 5000, newSearchText, searchBy);
             setLoading(false);
             if (response.error) {
                 setGlobalError(true);
@@ -117,26 +192,73 @@ function HomePage({ activeUser }) {
             else {
                 if (response.response) {
                     const data = response.response.data.content;
+                    //processChange(data);
                     setSongResults(data);
                 }
             }
         } else {
-            setSongResults([]);
+            if (searchBy == searchByValues.SUBJECTS && newSearchText.length > 0) {
+                setLoading(true);
+                const response = await ApiDataService.getData(ApiDataService.types.SUBJECT, undefined, 5000, newSearchText, searchBy);
+                setLoading(false);
+                if (response.error) {
+                    setGlobalError(true);
+                }
+                else {
+                    if (response.response) {
+                        const data = response.response.data.content;
+                        //processChange(data);
+                        setSubjectResults(data);
+                    }
+                }
+            } else {
+                setSubjectResults([]);
+            }
         }
     }
 
     function handleSongCheckBySearch(result) {
         debugger
         setSearchSongText("");
-        setSongs(songResults.filter((plainSong, index) => index == result).map((plainSong) => new SongModel(plainSong)));
-        setSongResults([]);
+        if (searchBy == searchByValues.SUBJECTS) {
+            setSubjectResults([]);
+            getBySubject(subjectResults[result].name);
+        }
+        else {
+            setSongs(songResults.filter((plainSong, index) => index == result).map((plainSong) => new SongModel(plainSong)));
+            setSongResults([]);
+        }
     }
 
-    function handleSearchEnter() {
+    async function handleSearchEnter() {
         debugger
-        setSearchSongText("");
-        setSongs(songResults.map((plainSong) => new SongModel(plainSong)));
+        if (searchSongText.length <= 3 && searchSongText.length > 0) {
+            setLoading(true);
+            const response = await ApiDataService.getData(ApiDataService.types.SONG, undefined, 5000, searchSongText, searchBy);
+            setLoading(false);
+            if (response.error) {
+                setGlobalError(true);
+            }
+            else {
+                if (response.response) {
+                    const data = response.response.data.content;
+                    //processChange(data);
+                    setSongs(data.map((plainSong) => new SongModel(plainSong)));
+                    setTotalPages(0);
+                }
+            }
+        }
+        else {
+            setSearchSongText("");
+            setSongs(songResults.map((plainSong) => new SongModel(plainSong)));
+            setSongResults([]);
+        }
+    }
+
+    function handleSearchBySelect(searchBySelect) {
         setSongResults([]);
+        setSearchBy(searchBySelect.value);
+        setTotalPages(0);
     }
 
     async function getAfterAction() {
@@ -417,17 +539,38 @@ function HomePage({ activeUser }) {
                 <SearchBox
                     placeholder="חיפוש שיר ..."
                     searchText={searchSongText}
-                    onSearchChange={handleSongSearchChange}
+                    onSearchChange={debounce((data) => handleSongSearchChange(data))}
                     onEnter={handleSearchEnter}
-                    results={songResults.map(result => result.title + ", " + result.lyrics + ", " + result.composer + ", " + result.firstWords)}
-                    onResultSelected={handleSongCheckBySearch} />
-                {/* <Filter
+                    results={searchBy != searchByValues.SUBJECTS ? songResults.map(result => result.title + ", " + result.lyrics + ", " + result.composer + ", " + result.firstWords) : subjectResults.map(result => result.name)}
+                    onResultSelected={handleSongCheckBySearch}
+                    searchBy={searchBy}
+                    searchByItems={searchByDropDwon}
+                    onSearchBySelect={handleSearchBySelect} />
+                {/* <Filter onSearchBySelect={e => setSearchBy(e.target.value)}/>
                     icon={<i className="bi bi-music-note"></i>}
                     // <i className="bi bi-funnel-fill"></i><i className="bi bi-search"></i>
                     placeholder="חיפוש שיר ..."
                     filterText={searchSongText}
                     filterTextChange={(text) => songResults(text)}
                 /> */}
+                {/* {!loading && <div className="header-ruler">
+                    {!loading && editable && <div className="new-song">
+                        <Button variant="link" onClick={() => setShowModalNewSong(true)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i> הוספת שיר חדש </Button>
+                    </div>}
+                    {!loading &&
+                        <Header as='h4'>
+                            <Header.Content>
+                                {''}
+                                <Dropdown
+                                    inline
+                                    icon='filter'
+                                    options={subjectsValuesNamesFilter}
+                                    defaultValue={subjectsValuesNamesFilter[0].text}
+                                    onChange={(prop, data) => { getBySubject(data.value) }}
+                                />
+                            </Header.Content>
+                        </Header>}
+                </div>} */}
                 {!loading && editable && <div className="new-song">
                     <Button variant="link" onClick={() => setShowModalNewSong(true)}><i className="bi bi-plus-circle-fill" style={{ color: 'lightskyblue' }}></i> הוספת שיר חדש </Button>
                 </div>}
@@ -666,7 +809,7 @@ function HomePage({ activeUser }) {
                         </Button>
                     </Modal.Footer>
                 </Modal>
-                {!loading && <Pagination className="p-2"
+                {!loading && totalPages > 0 && <Pagination className="p-2"
                     activePage={page}
                     boundaryRange={boundaryRange}
                     onPageChange={handlePaginationChange}

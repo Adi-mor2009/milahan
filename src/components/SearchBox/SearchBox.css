@@ -26,3 +26,12 @@
 input.form-control {
     font-weight: bold;
 }
+
+.ui.dropdown .menu>.item {
+    text-align: right !important
+}
+
+.ui.header {
+    color: gray !important;
+    line-height: 2em !important;
+}

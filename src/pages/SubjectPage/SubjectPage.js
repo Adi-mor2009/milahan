@@ -34,6 +34,10 @@ function SubjectPage({ activeUser }) {
         DELETE: "delete"
     }
 
+    const searchByValues = {
+        SUBJECTS: 'subjects'
+    }
+
     useEffect(() => {
         (async () => {
             setLoading(true);
@@ -59,7 +63,7 @@ function SubjectPage({ activeUser }) {
 
         if (newSearchText) {
             setLoading(true);
-            const response = await ApiDataService.getData(ApiDataService.types.SUBJECT, undefined, 5000, newSearchText);
+            const response = await ApiDataService.getData(ApiDataService.types.SUBJECT, undefined, 5000, newSearchText, searchByValues.SUBJECTS);
             setLoading(false);
             if (response.error) {
                 setGlobalError(true);

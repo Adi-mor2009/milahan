@@ -10,10 +10,11 @@ const types = {
     SONG_BOOK: "songbook"
 }
 
-async function getData(type, pageNum, pageSize, filter) {
+async function getData(type, pageNum, pageSize, filter, searchBy) {
+    debugger
     //GET /cars?country=USA&sort=createDate:desc&size=100&offset=2&pageSize=5&pageNo=1
     const dynamicUrlPart = (filter || pageNum) ? "?" : "";
-    const filterUrlPart = filter ? "name=" + filter : "";
+    const filterUrlPart = (filter && searchBy) ? searchBy + "=" + filter : "";
     const pageUrlPart = (filter && pageNum) ? "&pageNo=" + (pageNum - 1) : pageNum ? "pageNo=" + (pageNum - 1) : "";
     const pageSizePart = pageSize ? (dynamicUrlPart == "?" ? "&pageSize=" + pageSize: "?pageSize=" + pageSize) : "";
     
